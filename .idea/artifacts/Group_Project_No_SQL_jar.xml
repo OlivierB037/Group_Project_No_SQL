@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Group_Project_No_SQL:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Group_Project_No_SQL_jar</output-path>
+    <root id="archive" name="Group_Project_No_SQL.jar">
+      <element id="module-output" name="Group_Project_No_SQL" />
+    </root>
+  </artifact>
+</component>
