@@ -1,55 +1,39 @@
 package fr.cnam.group;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static fr.cnam.group.Main.DATA_SEPARATOR;
-import static fr.cnam.group.Main.MAIN_SEPARATOR;
+import static fr.cnam.group.DataHandler.annuaire;
 
 
-public class Particulier {
+public class Particulier extends Account {
 
     private String nom;
     private String prenom;
 
     private String date_naissance;
-    private String identifiant;
 
-    public Particulier(String _nom, String _prenom, String date) throws Exception {
+    private String date_modification;
+
+    public Particulier(String _nom, String _prenom, String date, String _date_modification, String identifiant, char[] password) throws Exception {
+        super(identifiant, password);
        nom = formatNames(_nom);
        prenom = formatNames(_prenom);
        date_naissance = formatNames(date);
-       identifiant = nom+'_'+prenom+'_'+date.subSequence(8,10);
+//       identifiant = nom+'_'+prenom+'_'+date.subSequence(8,10);
+       date_modification = _date_modification;
+        System.out.println(date_modification);
+
     }
 
 
 
-    public static String ajouterParticulier(String nom, String prenom, String date_naissance) throws Exception { // ajout d'un particulier dans le système
 
 
-
-
-
-
-            Particulier nouveauParticulier = new Particulier(nom, prenom, date_naissance);
-            if (Main.annuaire.putIfAbsent(nouveauParticulier.getIdentifiant(), nouveauParticulier) == null) {
-                System.out.println("particulier créé");
-                if (Main.addParticulierToFile(nouveauParticulier)) {
-                    System.out.println("particulier ajouté. identifiant: : " + nouveauParticulier.getIdentifiant());
-                    return nouveauParticulier.getIdentifiant();
-                } else {
-                    Main.annuaire.remove(nouveauParticulier.getIdentifiant());
-                    return null;
-                }
-
-            } else {
-                System.out.println("erreur lors de l'ajout au système");
-                return null;
-            }
-
+    public static String generateDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(new Date());
     }
 
 
@@ -57,10 +41,10 @@ public class Particulier {
     public static Particulier[] trouverParticulier(String nom, String prenom,String date, boolean andOperator) {
         //String identifiant;
 
-        Particulier[] particuliersTrouves = new Particulier[Main.annuaire.size()];
+        Particulier[] particuliersTrouves = new Particulier[DataHandler.annuaire.size()];
         AtomicInteger i = new AtomicInteger();
         if (andOperator){
-            Main.annuaire.forEach((identifiant, particulier) -> {
+            DataHandler.annuaire.forEach((identifiant, particulier) -> {
 
                 if (particulier.getNom().equalsIgnoreCase(nom) && particulier.getPrenom().equalsIgnoreCase(prenom) && particulier.getDate_naissance().equals(date)) {
                     System.out.println("correspondance " + nom + " " + prenom);
@@ -71,7 +55,7 @@ public class Particulier {
             });
         }
         else {
-            Main.annuaire.forEach((identifiant, particulier) -> {
+            DataHandler.annuaire.forEach((identifiant, particulier) -> {
 
                 if (particulier.getNom().equalsIgnoreCase(nom) || particulier.getPrenom().equalsIgnoreCase(prenom) || particulier.getDate_naissance().equals(date)) {
                     System.out.println("correspondance " + nom + " " + prenom);
@@ -117,59 +101,65 @@ public class Particulier {
 
 
 
-    public static boolean modifyParticulier(Particulier particulier, Particulier nouveauParticulier) throws Exception {
+//    public static boolean modifyParticulier(Particulier particulier, Particulier nouveauParticulier) throws Exception {
+//
+//
+//
+//        Particulier[] particuliers = new Particulier[DataHandler.annuaire.size()];
+//        System.out.printf("there's %d particuliers in HashMap\n", DataHandler.annuaire.size());
+//        DataHandler.annuaire.replace(particulier.getIdentifiant(),nouveauParticulier);
+//        System.out.println("particulier replaced in HashMap");
+//
+//
+//        particuliers = DataHandler.annuaire.values().toArray(particuliers);
+//        int refClient = 0;
+//        for(Particulier p : particuliers) {
+//            System.out.println("reading from extracted data : " + p.getIdentifiant());
+//            if (p != null){
+//                System.out.println("modifying" + p.getIdentifiant() + " to : " + nouveauParticulier.getIdentifiant());
+//                DataHandler.addParticulierToFile(p);
+//
+//
+//
+//            } else {
+//
+//                if(refClient ==  0){
+//                    System.err.println("particulier read is null");
+//                    throw new Exception("no match for particulier");
+//                }
+//                else{
+//                    System.out.println("end of particuliers list");
+//
+//                }
+//
+//            }
+//            refClient++;
+//        }
+//        return true;
+//    }
 
 
 
-        Particulier[] particuliers = new Particulier[Main.annuaire.size()];
-        System.out.printf("there's %d particuliers in HashMap\n", Main.annuaire.size());
-        Main.annuaire.replace(particulier.getIdentifiant(),nouveauParticulier);
-        System.out.println("particulier replaced in HashMap");
-
-
-        particuliers = Main.annuaire.values().toArray(particuliers);
-        int refClient = 0;
-        for(Particulier p : particuliers) {
-            System.out.println("reading from extracted data : " + p.getIdentifiant());
-            if (p != null){
-                System.out.println("modifying" + p.getIdentifiant() + " to : " + nouveauParticulier.getIdentifiant());
-                Main.addParticulierToFile(p);
 
 
 
-            } else {
-
-                if(refClient ==  0){
-                    System.err.println("particulier read is null");
-                    throw new Exception("no match for particulier");
-                }
-                else{
-                    System.out.println("end of particuliers list");
-
-                }
-
-            }
-            refClient++;
-        }
-        return true;
-    }
-
-    public static boolean deleteParticulier(Particulier particulier) throws Exception {
-        Particulier[] particuliers = new Particulier[Main.annuaire.size()];
-        System.out.printf("there's %d particuliers in HashMap\n", Main.annuaire.size());
-        if (Main.annuaire.remove(particulier.getIdentifiant()) == null){
+    @Override
+    public boolean remove() throws Exception {
+        Particulier[] particuliers = new Particulier[DataHandler.annuaire.size()];
+        System.out.printf("there's %d particuliers in HashMap\n", DataHandler.annuaire.size());
+        if (DataHandler.annuaire.remove(getIdentifiant()) == null){
             return false;
         }
         System.out.println("particulier removed from HashMap");
 
 
-        particuliers = Main.annuaire.values().toArray(particuliers);
+        particuliers = DataHandler.annuaire.values().toArray(particuliers);
         int refClient = 0;
         for(Particulier p : particuliers) {
             System.out.println("reading from extracted data : " + p.getIdentifiant());
             if (p != null){
 
-                Main.addParticulierToFile(p);
+                DataHandler.addParticulierToFile(p);
 
 
 
@@ -190,12 +180,86 @@ public class Particulier {
         return true;
     }
 
+    @Override
+    public boolean modify(Account newAccount) throws Exception {
+        Particulier[] particuliers = new Particulier[DataHandler.annuaire.size()];
+        System.out.printf("there's %d particuliers in HashMap\n", DataHandler.annuaire.size());
+
+        if (getIdentifiant().equals(newAccount.getIdentifiant())){
+            annuaire.replace(getIdentifiant(), (Particulier) newAccount);
+        }else {
+            if (annuaire.putIfAbsent(newAccount.getIdentifiant(), (Particulier) newAccount) == null) {
+                annuaire.remove(getIdentifiant());
+
+            } else {
+                throw new Exception("erreur lors de l'ajout au système");
+            }
+        }
+
+        DataHandler.annuaire.replace(getIdentifiant(), (Particulier) newAccount);
+        System.out.println("particulier replaced in HashMap");
+
+
+        particuliers = DataHandler.annuaire.values().toArray(particuliers);
+        int refClient = 0;
+        for(Particulier p : particuliers) {
+            System.out.println("reading from extracted data : " + p.getIdentifiant());
+            if (p != null){
+                System.out.println("modifying" + p.getIdentifiant() + " to : " + newAccount.getIdentifiant());
+                DataHandler.addParticulierToFile(p);
 
 
 
-    public String getIdentifiant(){
-        return identifiant;
+            } else {
+
+                if(refClient ==  0){
+                    System.err.println("particulier read is null");
+                    throw new Exception("no match for particulier");
+                }
+                else{
+                    System.out.println("end of particuliers list");
+
+                }
+
+            }
+            refClient++;
+        }
+        return true;
     }
+
+    @Override
+    public boolean ajouter() throws Exception {
+
+        if (DataHandler.annuaire.putIfAbsent(getIdentifiant(), this) == null) {
+            System.out.println("particulier créé");
+            if (DataHandler.addParticulierToFile(this)) {
+                System.out.println("particulier ajouté. identifiant: : " + getIdentifiant());
+                return true;
+            } else {
+                DataHandler.annuaire.remove(getIdentifiant());
+                return false;
+            }
+
+        } else {
+            System.out.println("erreur lors de l'ajout au système");
+            return false;
+        }
+    }
+
+    public String getDate_modification() {
+        return date_modification;
+    }
+
+    @Override
+    public String getIdentifiant() {
+        return super.getIdentifiant();
+    }
+
+    @Override
+    public char[] getPassword() {
+        return super.getPassword();
+    }
+
     public String getNom() {
         return nom;
     }

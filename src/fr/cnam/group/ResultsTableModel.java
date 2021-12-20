@@ -46,12 +46,12 @@ public class ResultsTableModel <T> extends AbstractTableModel {
                         values.add(line);
                     }
                 }
-            } else if (resultArray instanceof Administrateur[]){
+            } else if (resultArray instanceof Account[]){
                 columnsNames.add("Identifiant");
                 columnsTypes.add(String.class.getName());
                 System.out.println("resultTableModel : array type is Administrateur");
-                Administrateur[] adminArray = (Administrateur[]) Arrays.copyOf(resultArray,resultArray.length);
-                for (Administrateur p : adminArray) {
+                Account[] adminArray = (Account[]) Arrays.copyOf(resultArray,resultArray.length);
+                for (Account p : adminArray) {
                     if (p != null) {
                         ArrayList<String> line = new ArrayList<>();
                         line.add(p.getIdentifiant());

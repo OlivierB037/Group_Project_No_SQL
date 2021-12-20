@@ -39,7 +39,10 @@
           <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Consulter"/>
+          <focusable value="false"/>
+          <font name="Comic Sans MS" size="20"/>
+          <rolloverEnabled value="false"/>
+          <text value="Consulter l'annuaire"/>
         </properties>
       </component>
       <component id="88195" class="javax.swing.JButton" binding="modifierButton" default-binding="true">
@@ -47,7 +50,10 @@
           <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Modifier"/>
+          <focusable value="false"/>
+          <font name="Comic Sans MS" size="20"/>
+          <rolloverEnabled value="false"/>
+          <text value="Modifier un Utilisateur ou un Administrateur"/>
         </properties>
       </component>
       <component id="7b5a5" class="javax.swing.JButton" binding="ajouterButton" default-binding="true">
@@ -55,7 +61,11 @@
           <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Ajouter"/>
+          <focusable value="false"/>
+          <font name="Comic Sans MS" size="20"/>
+          <label value="Ajouter un Utilisateur ou un Administrateur"/>
+          <rolloverEnabled value="false"/>
+          <text value="Ajouter un Utilisateur ou un Administrateur"/>
         </properties>
       </component>
       <vspacer id="c88f6">
@@ -78,6 +88,9 @@
           <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <focusable value="false"/>
+          <font name="Comic Sans MS" size="20"/>
+          <rolloverEnabled value="false"/>
           <text value="Quitter"/>
         </properties>
       </component>
@@ -96,6 +109,9 @@
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <focusable value="false"/>
+          <font name="Comic Sans MS" size="20"/>
+          <rolloverEnabled value="false"/>
           <text value="Connection"/>
         </properties>
       </component>

@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 
 public class ConnectDialog extends JDialog {
     private JPanel connexionPane;
-    private JButton buttonOK;
+    private JButton connectButton;
     private JButton buttonDisconnect;
     private JTextField userField;
     private JTextPane connexionTextPane;
@@ -24,17 +24,17 @@ public class ConnectDialog extends JDialog {
         this.setLocationRelativeTo(menuPrincipal.getMenuPrincipalPanel());
         setContentPane(connexionPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
-        if (Main.currentUser == null) {
-            buttonOK.setEnabled(true);
+        getRootPane().setDefaultButton(connectButton);
+        if (DataHandler.currentUser == null) {
+            connectButton.setEnabled(true);
             buttonDisconnect.setEnabled(false);
         }
         else{
-            buttonOK.setEnabled(false);
+            connectButton.setEnabled(false);
             buttonDisconnect.setEnabled(true);
         }
 
-        buttonOK.addActionListener(menuPrincipal);
+        connectButton.addActionListener(menuPrincipal);
 
         buttonDisconnect.addActionListener(menuPrincipal);
 
@@ -58,8 +58,8 @@ public class ConnectDialog extends JDialog {
         return connexionPane;
     }
 
-    public JButton getButtonOK() {
-        return buttonOK;
+    public JButton getConnectButton() {
+        return connectButton;
     }
 
     public JButton getButtonDisconnect() {

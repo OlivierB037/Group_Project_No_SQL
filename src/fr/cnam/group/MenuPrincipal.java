@@ -6,11 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.PasswordAuthentication;
-import java.sql.SQLException;
 import java.util.Arrays;
 
-public class MenuPrincipal extends WindowAdapter implements ActionListener {
+public class MenuPrincipal extends WindowAdapter implements ActionListener { // extends windows adapter et implémente ActionListener pour être à l'écoute de certains évènements
     private JPanel menuPrincipalPanel;
     private JButton consulterButton;
     private JTextArea title;
@@ -38,29 +36,30 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
         myWindow.setContentPane(menuPrincipalPanel);
         myWindow.setMinimumSize(new Dimension(600,600));
 
-        myWindow.addWindowStateListener(e -> {
-            if (e.getNewState() == WindowEvent.WINDOW_CLOSING){
-                System.out.println("window closing");
+        composeMenuPrincipal();
 
-            }
-            else if(e.getNewState() == WindowEvent.WINDOW_CLOSED){
-                System.out.println("window closed");
-            }
-            else{
-                System.out.println("window event : " + e.getNewState());
-            }
-        });
-
+        /*enregistrement du listener d'état de la fenêtre, correspondant à l'héritage de la classe abstraite WindowAdapter
+        * la méthode prend également les windowListener, mais la classe WindowAdapter est plus souple car n'oblige pas à redéfinir toutes ses méthodes
+        * la méthode  redéfinie (callBack) recevant l'évènement est plus bas*/
 
         myWindow.addWindowListener(this);
 
-        connecterButton.addActionListener(e -> {
-            openConnect();
-        });
+        connecterButton.addActionListener(e -> openConnect() ); // execution de openConnect() si clic sur le bouton connecter
+
+        /*
+        * le listener "e" est utilisé en parametre d'une fonction lambda
+        * la syntaxe e -> {}  ou (e) -> {} équivaut ici à:
+        * new ActionListener({
+        *   @Override
+        *   public void actionPerformed(ActionEvent e) {
+        *   }
+        * });
+        */
+
 
         modifierButton.addActionListener(e -> {
             try {
-                if (Main.currentUser == null) {
+                if (DataHandler.currentUser == null) {
                     JOptionPane.showMessageDialog(myWindow,"only administrateurs can access this section","Accès Refusé",JOptionPane.ERROR_MESSAGE);
 
                 } else {
@@ -79,12 +78,12 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
         consulterButton.addActionListener(e -> {
             try {
 
-                topMenu.getReturnToMain().setVisible(true);
+                topMenu.getReturnToMain().setVisible(true); // on rend visible l'option de retour au menu principal dans le menu "fichier"
 
 
                 MenuConsulter menuConsulter = new MenuConsulter();
 
-                myWindow.setContentPane(menuConsulter.getConsultPane());
+                myWindow.setContentPane(menuConsulter.getConsultPane()); // setContent Pane applique un contenu à la fenetre
 
             }catch (Exception err){
                 JOptionPane.showMessageDialog(myWindow,err.getMessage());
@@ -92,13 +91,9 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
         });
 
 
-
-
-
-
         ajouterButton.addActionListener(e -> {
             try {
-                if (Main.currentUser != null ) {
+                if (DataHandler.currentUser != null ) {
 
                     topMenu.getReturnToMain().setVisible(true);
 
@@ -131,9 +126,40 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
         topMenu.getReturnToMain().addActionListener(this);
     }
 
+    private void composeMenuPrincipal(){// méthode réarrangeant le menu selon le statut de l'utilisateur
+        if (DataHandler.currentUser == null){ //mode invité
+            connecterButton.setVisible(true);
+            connecterButton.setText("Connection");
+            ajouterButton.setVisible(false);
+            consulterButton.setVisible(true);
+
+            modifierButton.setVisible(false);
+        }
+        else if (DataHandler.currentUser instanceof Administrateur){     //mode admin
+            connecterButton.setVisible(true);
+            connecterButton.setText("Déconnection");
+            ajouterButton.setVisible(true);
+
+            consulterButton.setVisible(true);
+
+            modifierButton.setVisible(true);
+            modifierButton.setText("Modifier un Utilisateur ou un Administrateur");
+        }
+        else if (DataHandler.currentUser instanceof Particulier){ // mode particulier
+            connecterButton.setVisible(true);
+            connecterButton.setText("Déconnection");
+            ajouterButton.setVisible(true);
+
+            consulterButton.setVisible(true);
+
+            modifierButton.setVisible(true);
+            modifierButton.setText("Modifier votre compte");
+        }
+    }
+
     public void openConnect(){
-        dialog = new ConnectDialog(this);
-        dialog.pack();
+        dialog = new ConnectDialog(this); //créé le boite de dialogue gérant la connexion
+        dialog.pack(); //ajuste les dimensions et la position du Dialog
         dialog.setVisible(true);
     }
 
@@ -175,7 +201,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
 
 
     @Override
-    public void windowClosing(WindowEvent e) {
+    public void windowClosing(WindowEvent e) { // CallBack recevant les Events de la fenêtre en redéfinissant une méthode de WindowAdapter
         System.out.println("window closing");
 
 
@@ -183,22 +209,44 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
 
     }
 
+    /*redéfinition de la méthode actionPerformed de l'interface fonctionnelle ActionListener.
+    * action performed est la seule méthode abstraite de l'interface ActionListener,
+    *  ce qui permet de l'utiliser en tant que fonction lambda (une seule méthode à redéfinir donc pas de confusion possible)
+    *
+    * la classe MenuPrincipal à servi à enregistrer plusieurs Listeners à travers le programme, on trie donc l'origine de l'évènement e via e.getsource()
+    * */
     @Override
     public void actionPerformed(ActionEvent e) {
         System.out.println("action performed");
         try {
 
-            if(e.getSource() == topMenu.getReturnToMain()|| e.getActionCommand().equals("returnToMainFromModifier")){
+            if(e.getSource() == topMenu.getReturnToMain()|| e.getActionCommand().equals("returnToMainFromModifier")){ // capture de l'event retourner au menu principal de la barre des taches
+                composeMenuPrincipal();
                 myWindow.setContentPane(menuPrincipalPanel);
                 topMenu.getReturnToMain().setVisible(false);
             }
             if (dialog != null) {
-                if (e.getSource().equals(dialog.getButtonOK())){
+                if (e.getSource().equals(dialog.getConnectButton())){ //capture de l'event du bouton connecter de la boite de dialogue de connexion
                    String id = dialog.getUserField().getText();
-                   if (Main.listeAdmins.get(id) != null){
-                       if (Arrays.equals(dialog.getPasswordField().getPassword(), Main.listeAdmins.get(id).getPassword())){
-                           Main.currentUser = Main.listeAdmins.get(id);
-                           if (Main.currentUser != null){
+                   if (DataHandler.listeComptes.get(id) != null){ // recherche de l'identifiant admin saisi dans le Dialog Connecter
+                       System.out.println("id found in listeAdmins");
+                       if (Arrays.equals(dialog.getPasswordField().getPassword(), DataHandler.listeComptes.get(id).getPassword())){ //vérification du mot de passe
+                           DataHandler.currentUser = DataHandler.listeComptes.get(id);
+                           if (DataHandler.currentUser != null){
+                               composeMenuPrincipal();
+                               dialog.dispose(); // fermeture de la boite de dialogue connecter
+                               JOptionPane.showMessageDialog(myWindow,"connexion réussie","connexion réussie",JOptionPane.INFORMATION_MESSAGE);// affichage d'une boite de dialogue rapide
+
+                           }
+                       }
+                       else{
+                           throw new Exception("mot de passe incorrect");// permet de capturer l'exception dans la classe appelante avec un message décrivant la raison
+                       }
+                   }
+                   else if (DataHandler.annuaire.get(id) != null){ // recherche de l'identifiant Particulier saisi dans le Dialog Connecter
+                       if (Arrays.equals(dialog.getPasswordField().getPassword(), DataHandler.annuaire.get(id).getPassword())){
+                           DataHandler.currentUser = DataHandler.annuaire.get(id);
+                           if (DataHandler.currentUser != null){
                                dialog.dispose();
                                JOptionPane.showMessageDialog(myWindow,"connexion réussie","connexion réussie",JOptionPane.INFORMATION_MESSAGE);
 
@@ -208,13 +256,14 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
                            throw new Exception("mot de passe incorrect");
                        }
                    }
-                   else {
+                   else{
                        throw new Exception("identifiant incorrect");
                    }
                }
                else if (e.getSource() == dialog.getButtonDisconnect()){
-                   Main.currentUser = null;
+                   DataHandler.currentUser = null;
                    JOptionPane.showMessageDialog(myWindow,"déconnexion réussie","déconnexion réussie",JOptionPane.INFORMATION_MESSAGE);
+                   composeMenuPrincipal();
                    dialog.dispose();
 
                }
