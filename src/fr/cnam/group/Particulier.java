@@ -1,10 +1,12 @@
 package fr.cnam.group;
 
+import javax.swing.*;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static fr.cnam.group.DataHandler.annuaire;
+import static fr.cnam.group.DataHandler.*;
 
 
 public class Particulier extends Account {
@@ -91,7 +93,7 @@ public class Particulier extends Account {
 
     public static boolean isDateFormatOk(String name)  {
         System.out.println("date checked : " + name);
-        if (name.matches("^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d$")){
+        if (name.matches("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\\d\\d$")){
             return true;
         }
         else return false;
@@ -155,11 +157,13 @@ public class Particulier extends Account {
 
         particuliers = DataHandler.annuaire.values().toArray(particuliers);
         int refClient = 0;
+        clearFile(new File(ANNUAIRE_FILE_PATH));
+        clearFile(new File(ACCOUNT_FILE_PATH));
         for(Particulier p : particuliers) {
             System.out.println("reading from extracted data : " + p.getIdentifiant());
             if (p != null){
 
-                DataHandler.addParticulierToFile(p);
+                DataHandler.addToFile(p);
 
 
 
@@ -202,11 +206,13 @@ public class Particulier extends Account {
 
         particuliers = DataHandler.annuaire.values().toArray(particuliers);
         int refClient = 0;
+        clearFile(new File(ANNUAIRE_FILE_PATH));
+        clearFile(new File(ACCOUNT_FILE_PATH));
         for(Particulier p : particuliers) {
             System.out.println("reading from extracted data : " + p.getIdentifiant());
             if (p != null){
                 System.out.println("modifying" + p.getIdentifiant() + " to : " + newAccount.getIdentifiant());
-                DataHandler.addParticulierToFile(p);
+                DataHandler.addToFile(p);
 
 
 
@@ -232,10 +238,12 @@ public class Particulier extends Account {
 
         if (DataHandler.annuaire.putIfAbsent(getIdentifiant(), this) == null) {
             System.out.println("particulier créé");
-            if (DataHandler.addParticulierToFile(this)) {
+            try  {
+                DataHandler.addToFile(this);
                 System.out.println("particulier ajouté. identifiant: : " + getIdentifiant());
                 return true;
-            } else {
+            } catch (Exception e){
+
                 DataHandler.annuaire.remove(getIdentifiant());
                 return false;
             }

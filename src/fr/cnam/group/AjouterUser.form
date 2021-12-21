@@ -102,7 +102,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="423de" class="javax.swing.JFormattedTextField" binding="dateUserField">
+      <component id="645b8" class="javax.swing.JTextField" binding="dateNaissanceField">
         <constraints>
           <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -117,7 +117,7 @@
           <text value="date de naissance"/>
         </properties>
       </component>
-      <component id="9e01f" class="javax.swing.JComboBox" binding="statutUserBox">
+      <component id="9e01f" class="javax.swing.JComboBox" binding="addedTypeBox">
         <constraints>
           <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>

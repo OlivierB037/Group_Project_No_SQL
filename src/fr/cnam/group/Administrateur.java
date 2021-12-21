@@ -1,5 +1,6 @@
 package fr.cnam.group;
 
+import java.io.File;
 import java.io.IOException;
 
 import static fr.cnam.group.DataHandler.*;
@@ -19,13 +20,13 @@ public class Administrateur extends Account{
 
 
 
-        Administrateur[] accounts = new Administrateur[listeComptes.size()+ annuaire.size()];
-        System.out.printf("there's %d accounts in HashMap\n", listeComptes.size());
+        Administrateur[] accounts = new Administrateur[listeAdmins.size()+ annuaire.size()];
+        System.out.printf("there's %d accounts in HashMap\n", listeAdmins.size());
         if (getIdentifiant().equals(newAccount.getIdentifiant())){
-            listeComptes.replace(getIdentifiant(), (Administrateur) newAccount);
+            listeAdmins.replace(getIdentifiant(), (Administrateur) newAccount);
         }else {
-            if (listeComptes.putIfAbsent(newAccount.getIdentifiant(), (Administrateur) newAccount) == null) {
-                listeComptes.remove(getIdentifiant());
+            if (listeAdmins.putIfAbsent(newAccount.getIdentifiant(), (Administrateur) newAccount) == null) {
+                listeAdmins.remove(getIdentifiant());
 
             } else {
                 throw new Exception("erreur lors de l'ajout au système");
@@ -34,16 +35,17 @@ public class Administrateur extends Account{
         System.out.println("Account replaced in HashMap");
 
 
-        accounts = listeComptes.values().toArray(accounts);
+        accounts = listeAdmins.values().toArray(accounts);
 
 
 
         int refClient = 0;
-        for(Account a : accounts) {
+        clearFile(new File(ACCOUNT_FILE_PATH));
+        for(Administrateur a : accounts) {
             System.out.println("reading from extracted data : " + a.getIdentifiant());
             if (a != null){
                 System.out.println("checking " + a.getIdentifiant());
-                DataHandler.addAdminToFile(a);
+                DataHandler.addToFile(a);
 
             } else {
 
@@ -65,21 +67,22 @@ public class Administrateur extends Account{
 
     @Override
     public boolean remove() throws Exception {
-        Administrateur[] accounts = new Administrateur[listeComptes.size()+DataHandler.annuaire.size()];
+        Administrateur[] accounts = new Administrateur[listeAdmins.size()+DataHandler.annuaire.size()];
         System.out.printf("there's %d accounts in HashMap\n", DataHandler.annuaire.size());
 
-        listeComptes.remove(getIdentifiant());
+        listeAdmins.remove(getIdentifiant());
         System.out.println("administrateur removed from HashMap");
 
-        accounts = listeComptes.values().toArray(accounts);
+        accounts = listeAdmins.values().toArray(accounts);
 
 
         int refClient = 0;
-        for(Account a : accounts) {
+        clearFile(new File(ACCOUNT_FILE_PATH));
+        for(Administrateur a : accounts) {
             System.out.println("reading from extracted data : " + a.getIdentifiant());
             if (a != null){
                 System.out.println("checking " + a.getIdentifiant());
-                DataHandler.addAdminToFile(a);
+                DataHandler.addToFile(a);
 
             } else {
 
@@ -102,9 +105,9 @@ public class Administrateur extends Account{
     @Override
     public boolean ajouter() throws Exception {
         try {
-            if (listeComptes.putIfAbsent(getIdentifiant(), this) == null){
+            if (listeAdmins.putIfAbsent(getIdentifiant(), this) == null){
                 System.out.println("admin créé");
-                addAdminToFile(this);
+                addToFile(this);
                 return true;
             }
             else{
@@ -116,7 +119,7 @@ public class Administrateur extends Account{
         }catch (IOException e) {
             System.err.println(e.getMessage());
             System.out.println("removing from HashMap");
-            listeComptes.remove(getIdentifiant());
+            listeAdmins.remove(getIdentifiant());
             throw new Exception("erreur lors de l'inscription dans le fichier");
 
         }

@@ -114,8 +114,8 @@ public class MenuConsulter {
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
                         } else {
-                            accountSearchResult = new Administrateur[DataHandler.listeComptes.size()];
-                            accountSearchResult = DataHandler.listeComptes.values().toArray(accountSearchResult);
+                            accountSearchResult = new Administrateur[DataHandler.listeAdmins.size()];
+                            accountSearchResult = DataHandler.listeAdmins.values().toArray(accountSearchResult);
                             ResultsTableModel resultsTableModel = new ResultsTableModel(accountSearchResult);
                             resultsTable.setModel(resultsTableModel);
                         }

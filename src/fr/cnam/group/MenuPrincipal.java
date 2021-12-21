@@ -128,6 +128,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
 
     private void composeMenuPrincipal(){// méthode réarrangeant le menu selon le statut de l'utilisateur
         if (DataHandler.currentUser == null){ //mode invité
+            title.setText("Menu Principal");
             connecterButton.setVisible(true);
             connecterButton.setText("Connection");
             ajouterButton.setVisible(false);
@@ -136,6 +137,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
             modifierButton.setVisible(false);
         }
         else if (DataHandler.currentUser instanceof Administrateur){     //mode admin
+            title.setText("Menu Administrateur");
             connecterButton.setVisible(true);
             connecterButton.setText("Déconnection");
             ajouterButton.setVisible(true);
@@ -148,7 +150,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
         else if (DataHandler.currentUser instanceof Particulier){ // mode particulier
             connecterButton.setVisible(true);
             connecterButton.setText("Déconnection");
-            ajouterButton.setVisible(true);
+            ajouterButton.setVisible(false);
 
             consulterButton.setVisible(true);
 
@@ -228,10 +230,10 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
             if (dialog != null) {
                 if (e.getSource().equals(dialog.getConnectButton())){ //capture de l'event du bouton connecter de la boite de dialogue de connexion
                    String id = dialog.getUserField().getText();
-                   if (DataHandler.listeComptes.get(id) != null){ // recherche de l'identifiant admin saisi dans le Dialog Connecter
+                   if (DataHandler.listeAdmins.get(id) != null){ // recherche de l'identifiant admin saisi dans le Dialog Connecter
                        System.out.println("id found in listeAdmins");
-                       if (Arrays.equals(dialog.getPasswordField().getPassword(), DataHandler.listeComptes.get(id).getPassword())){ //vérification du mot de passe
-                           DataHandler.currentUser = DataHandler.listeComptes.get(id);
+                       if (Arrays.equals(dialog.getPasswordField().getPassword(), DataHandler.listeAdmins.get(id).getPassword())){ //vérification du mot de passe
+                           DataHandler.currentUser = DataHandler.listeAdmins.get(id);
                            if (DataHandler.currentUser != null){
                                composeMenuPrincipal();
                                dialog.dispose(); // fermeture de la boite de dialogue connecter
@@ -247,6 +249,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
                        if (Arrays.equals(dialog.getPasswordField().getPassword(), DataHandler.annuaire.get(id).getPassword())){
                            DataHandler.currentUser = DataHandler.annuaire.get(id);
                            if (DataHandler.currentUser != null){
+                               composeMenuPrincipal();
                                dialog.dispose();
                                JOptionPane.showMessageDialog(myWindow,"connexion réussie","connexion réussie",JOptionPane.INFORMATION_MESSAGE);
 

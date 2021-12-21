@@ -16,9 +16,9 @@ public class AjouterUser {
     private JTextField prenomUserField;
     private JLabel prenomUserLabel;
 
-    private JFormattedTextField dateUserField;
+    private JTextField dateNaissanceField;
     private JLabel dateLabel;
-    private JComboBox statutUserBox;
+    private JComboBox addedTypeBox;
     private JPasswordField passwordField;
     private JLabel passwordLabel;
     private JTextField identifiantField;
@@ -45,9 +45,10 @@ public class AjouterUser {
 //        passwordConfirmField.setVisible(false);
 //        passwordConfirmLabel.setVisible(false);
 
-        statutUserBox.addActionListener(e -> {
-            if (statutUserBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
+        addedTypeBox.addActionListener(e -> {
+            if (addedTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
                 type = Type.Particulier;
+
 //                passwordField.setVisible(true);
 //                passwordLabel.setVisible(true);
 //                passwordConfirmField.setVisible(true);
@@ -56,13 +57,14 @@ public class AjouterUser {
 //                nomUserLabel.setVisible(true);
 //                prenomUserField.setVisible(true);
 //                prenomUserLabel.setVisible(true);
-//                dateUserField.setVisible(true);
+//                dateNaissanceField.setVisible(true);
 //                dateLabel.setVisible(true);
 //                identifiantField.setVisible(false);
 //                identifiantLabel.setVisible(false);
             }
             else {
-//                type = Type.Administrateur;
+                type = Type.Administrateur;
+                setFieldsForAdmins();
 //                passwordField.setVisible(true);
 //                passwordLabel.setVisible(true);
 //                passwordConfirmField.setVisible(true);
@@ -71,7 +73,7 @@ public class AjouterUser {
 //                nomUserLabel.setVisible(false);
 //                prenomUserField.setVisible(false);
 //                prenomUserLabel.setVisible(false);
-//                dateUserField.setVisible(false);
+//                dateNaissanceField.setVisible(false);
 //                dateLabel.setVisible(false);
 //                identifiantField.setVisible(true);
 //                identifiantLabel.setVisible(true);
@@ -84,7 +86,7 @@ public class AjouterUser {
 
 //                        String nom = nomUserField.getText();
 //                        String prenom = prenomUserField.getText();
-//                        String date = dateUserField.getText();
+//                        String date = dateNaissanceField.getText();
 //                        char[] password = passwordField.getPassword();
 //                        char[] passwordConfirm = passwordConfirmField.getPassword();
 //                        if (Particulier.isDateFormatOk(date)) {
@@ -108,7 +110,7 @@ public class AjouterUser {
                         String identifiant = identifiantField.getText();
                         String nom = nomUserField.getText();
                         String prenom = prenomUserField.getText();
-                        String date = dateUserField.getText();
+                        String date = dateNaissanceField.getText();
                         char[] password = passwordField.getPassword();
                         char[] passwordConfirm = passwordConfirmField.getPassword();
                         if (!Arrays.equals(password, passwordConfirm)) {
@@ -130,7 +132,7 @@ public class AjouterUser {
                                 else{
                                     if (new Particulier(nom,prenom,date,Particulier.generateDate(),identifiant,password).ajouter()){
                                         clearFields();
-                                        JOptionPane.showMessageDialog(PanelAjouterUser, "Administrateur ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                        JOptionPane.showMessageDialog(PanelAjouterUser, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                                     }
                                 }
                             } else {
@@ -148,6 +150,44 @@ public class AjouterUser {
         });
     }
 
+    public void setAllFields(boolean b){
+        nomUserField.setVisible(b);
+        nomUserLabel.setVisible(b);
+        prenomUserField.setVisible(b);
+        prenomUserLabel.setVisible(b);
+        dateNaissanceField.setVisible(b);
+        dateLabel.setVisible(b);
+        identifiantField.setVisible(b);
+        identifiantLabel.setVisible(b);
+
+        passwordField.setVisible(b);
+        passwordLabel.setVisible(b);
+        passwordConfirmField.setVisible(b);
+        passwordConfirmLabel.setVisible(b);
+    }
+
+
+    public void setFieldsForAdmins(){
+
+
+        identifiantField.setVisible(true);
+        identifiantLabel.setVisible(true);
+
+        passwordField.setVisible(true);
+        passwordLabel.setVisible(true);
+        passwordConfirmField.setVisible(true);
+        passwordConfirmLabel.setVisible(true);
+
+        nomUserField.setVisible(false);
+        nomUserLabel.setVisible(false);
+        prenomUserField.setVisible(false);
+        prenomUserLabel.setVisible(false);
+        dateNaissanceField.setVisible(false);
+        dateLabel.setVisible(false);
+
+
+
+    }
 
 
 
@@ -156,7 +196,7 @@ public class AjouterUser {
         identifiantField.setText("");
         nomUserField.setText("");
         prenomUserField.setText("");
-        dateUserField.setText("");
+        dateNaissanceField.setText("");
         passwordConfirmField.setText("");
         passwordField.setText("");
     }

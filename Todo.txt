@@ -1,9 +1,10 @@
 * menu modifier :  valider la recherche en cliquant sur tout afficher
 * supprimer boutopn déconnecter et changer bouton menuconnecter en deconnexion
 * ajouter sécurité pour exclure ';' du cryptage
-* recréer une classe Utilisateur (qui pourrait contenir les methodes de la classe Main pour accéder aux fichiers/annuaires)
+
 * indiquer statut connecté ou non
-* réunir les fichiers admin et annuaire
+*renommer titre menus dynamiquement
 * montrer date modification dans menu consulter
-* changer isIdentifiantFormatOk pour mail
+*garantir impossibilité d'ajouter ";" dans les fichiers
 * ajouter des placeHolders
+*ajouter un moyen de récupérer identifiants perdus (particulier)
