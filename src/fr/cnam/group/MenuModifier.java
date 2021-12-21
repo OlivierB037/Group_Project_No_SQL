@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.Arrays;
 
-public class MenuModifier {
+public class MenuModifier implements PlaceHolder {
 
     private JPanel modifierPane;
     private JPanel userSearchPanel;
@@ -68,6 +68,7 @@ public class MenuModifier {
         newPasswordLabel.setVisible(false);
         newPasswordConfirmField.setVisible(false);
         newPasswordConfirmLabel.setVisible(false);
+        setPlaceHolders();
 
 
         modifiedType = Type.Particulier;
@@ -364,6 +365,7 @@ public class MenuModifier {
                                                 statutUserBox.setEnabled(true);
 
                                                 clearTextFields();
+                                                setPlaceHolders();
                                                 tacheStep = Step.Search;
 
                                                 modifierPane.updateUI();
@@ -470,7 +472,7 @@ public class MenuModifier {
                 if ((tacheStep == Step.change)) {
                     try {
 
-                        int returnToMain;
+                        int modifyAnother;
                         int response;
                         if(account instanceof Particulier){
                             Particulier particulier = (Particulier) account;
@@ -486,10 +488,10 @@ public class MenuModifier {
                             }
                             clearTextFields();
                             if (userType == Type.Administrateur) {
-                                returnToMain = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre particulier", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre particulier", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                             }
                             else{
-                                returnToMain = JOptionPane.NO_OPTION;
+                                modifyAnother = JOptionPane.NO_OPTION;
                             }
                         }  else {
                             if (account.checkPassword(currentPasswordField.getPassword())) {
@@ -507,9 +509,9 @@ public class MenuModifier {
                                 throw new Exception("l'ancien mot de passe est incorrect");
                             }
                             clearTextFields();
-                            returnToMain = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre administrateur", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre administrateur", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                         }
-                        if (returnToMain == JOptionPane.YES_OPTION) {
+                        if (modifyAnother == JOptionPane.YES_OPTION) {
 
                             tacheStep = Step.Search;
 
@@ -518,6 +520,7 @@ public class MenuModifier {
                             identifiantField.setEditable(true);
                             statutUserBox.setEnabled(true);
                             clearTextFields();
+                            setPlaceHolders();
                             tacheStep = Step.Search;
 
                             modifierPane.updateUI();
@@ -604,24 +607,24 @@ public class MenuModifier {
 
 
     }
-    public void setFieldsForParticulier(){
-        identifiantField.setVisible(true);
-        identifiantLabel.setVisible(true);
-        identifiantField.setEditable(true);
-        currentPasswordField.setVisible(false);
-        currentPasswordLabel.setVisible(false);
-        newPasswordField.setVisible(false);
-        newPasswordLabel.setVisible(false);
-        newPasswordConfirmField.setVisible(false);
-        newPasswordConfirmLabel.setVisible(false);
-
-        nomUserField.setVisible(true);
-        nomUserLabel.setVisible(true);
-        prenomUserField.setVisible(true);
-        prenomUserLabel.setVisible(true);
-        dateNaissanceField.setVisible(true);
-        dateLabel.setVisible(true);
-    }
+//    public void setFieldsForParticulier(){
+//        identifiantField.setVisible(true);
+//        identifiantLabel.setVisible(true);
+//        identifiantField.setEditable(true);
+//        currentPasswordField.setVisible(false);
+//        currentPasswordLabel.setVisible(false);
+//        newPasswordField.setVisible(false);
+//        newPasswordLabel.setVisible(false);
+//        newPasswordConfirmField.setVisible(false);
+//        newPasswordConfirmLabel.setVisible(false);
+//
+//        nomUserField.setVisible(true);
+//        nomUserLabel.setVisible(true);
+//        prenomUserField.setVisible(true);
+//        prenomUserLabel.setVisible(true);
+//        dateNaissanceField.setVisible(true);
+//        dateLabel.setVisible(true);
+//    }
 
 
 
@@ -650,6 +653,7 @@ public class MenuModifier {
 
 
     public void clearTextFields(){
+
         identifiantField.setText("");
         nomUserField.setText("");
         prenomUserField.setText("");
@@ -657,6 +661,17 @@ public class MenuModifier {
         newPasswordField.setText("");
         newPasswordConfirmField.setText("");
         currentPasswordField.setText("");
+    }
+
+    public void setPlaceHolders(){
+        setPlaceHolder(identifiantField, IDENTIFIANT_PLACEHOLDER);
+        setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+        setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
+//        setPlaceHolder(newPasswordField,PASSWORD_PLACEHOLDER);
+//        setPlaceHolder(newPasswordConfirmField,PASSWORD_PLACEHOLDER);
+
+        setPlaceHolder(currentPasswordField,PASSWORD_PLACEHOLDER);
     }
 
 

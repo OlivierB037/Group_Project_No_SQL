@@ -51,6 +51,7 @@ public abstract class Account {
     }
 
     public static boolean isPasswordFormatOk(char[] password){
+        if (password.length < 6 || password.length > 20)
         for(char c : password) {
             if (!(Character.toString(c).matches("[0-9a-zA-Z]") ) ) {
                 System.out.println("format incorrect");
