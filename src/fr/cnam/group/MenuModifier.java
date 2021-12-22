@@ -12,7 +12,7 @@ public class MenuModifier implements PlaceHolder {
     private JTextField prenomUserField;
     private JTextField identifiantField;
     private JTextField dateNaissanceField;
-    private JComboBox statutUserBox;
+    private JComboBox modifiedTypeBox;
     private JTable resultsTable;
     private JButton validerButton;
     private JTextField thanksField;
@@ -36,7 +36,8 @@ public class MenuModifier implements PlaceHolder {
     private final int SELECT_ALL_EVENT_ID = -382;
     private final int RETURN_TO_MAIN_EVENT_ID = 370;
 
-//    private Particulier particulier;
+    private Particulier particulier;
+    private Administrateur administrateur;
 //    private Particulier[] searchResult;
 
     //private Account account;
@@ -63,25 +64,35 @@ public class MenuModifier implements PlaceHolder {
         menuPrincipal = _menuPrincipal;
         resultsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         validerButton.setText("chercher");
-        supprimerButton.setEnabled(false);
+
         newPasswordField.setVisible(false);
         newPasswordLabel.setVisible(false);
         newPasswordConfirmField.setVisible(false);
         newPasswordConfirmLabel.setVisible(false);
-        setPlaceHolders();
 
 
-        modifiedType = Type.Particulier;
+//        setPlaceHolders();
+
+
+
+
+
+
         if (DataHandler.currentUser instanceof Particulier){
-            System.out.println("menu modifier : connecté en tant que particulier");
             userType = Type.Particulier;
             modifiedType = Type.Particulier;
-            statutUserBox.setVisible(false);
-            statutUserBox.setSelectedItem("Particulier");
-            userSearchPanel.setVisible(true);
+            System.out.println("menu modifier : connecté en tant que particulier");
+
+            setSearchFields(true);
+            setPasswordFields(true);
+
+            modifiedTypeBox.setVisible(false);
+            modifiedTypeBox.setSelectedItem("Particulier");
+
             selectAllBox.setSelected(false);
             selectAllBox.setVisible(false);
             resultsTable.setVisible(false);
+
             searchTypeButton.setVisible(false);
             tacheStep = Step.change;
             supprimerButton.setVisible(true);
@@ -98,23 +109,39 @@ public class MenuModifier implements PlaceHolder {
 
         }
         else if (DataHandler.currentUser instanceof Administrateur){
-            System.out.println("menu modifier : connecté en tant qu'Administrateur'");
             userType = Type.Administrateur;
+            modifiedType = Type.Particulier;
+            System.out.println("menu modifier : connecté en tant qu'Administrateur'");
+
+            selectAllBox.setVisible(true);
+            setSearchFields(false);
+            supprimerButton.setVisible(false);
+            setPasswordFields(false);
+            showNameFields();
 
             resultsTable.setVisible(true);
-            setParticulierFields(false);
-            identifiantField.setVisible(true);
-            identifiantLabel.setVisible(true);
+
             tacheStep = Step.Search;
             stepField.setText("remplir le formulaire de recherche");
+
+
             searchTypeButton.addActionListener(e -> {
+                setSearchFields(false);
                 manageSearchPanel();
             });
+
+
+
+
             selectAllBox.addActionListener(f -> {
                 if (selectAllBox.isSelected()) {
+                    resultsTable.setVisible(true);
                     userSearchPanel.setVisible(false);
+                    dropPlaceHolder(dateNaissanceField);
                     validerButton.doClick();
-                    tacheStep = Step.Select;
+//                    tacheStep = Step.Select;
+                    modifiedTypeBox.setEnabled(false);
+
                 } else {
                     userSearchPanel.setVisible(true);
                     try {
@@ -122,6 +149,7 @@ public class MenuModifier implements PlaceHolder {
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
+                    modifiedTypeBox.setEnabled(true);
                     validerButton.setEnabled(true);
                     stepField.setText("remplissez le formulaire pour chercher un particulier");
                     modifierPane.updateUI();
@@ -129,6 +157,8 @@ public class MenuModifier implements PlaceHolder {
                 }
             });
         }
+
+
 
         changePasswordButton.addActionListener(e -> {
             newPasswordField.setVisible(true);
@@ -144,23 +174,30 @@ public class MenuModifier implements PlaceHolder {
 
 
 
-        statutUserBox.addActionListener((e) -> {
+        modifiedTypeBox.addActionListener((e) -> {
             if (userType == Type.Administrateur) {
-                if (statutUserBox.getSelectedItem().toString().equals(Type.Particulier.toString())) {
+                if (modifiedTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())) {
                     modifiedType = Type.Particulier;
-
+                    resultsTable.setModel(new ResultsTableModel(null));
                     tacheStep = Step.Search;
+                    searchTypeButton.setVisible(true);
                     userSearchPanel.setVisible(true);
                     selectAllBox.setSelected(false);
                     selectAllBox.setVisible(true);
-                    manageSearchPanel();
+
+
+
+
+//                    manageSearchPanel();
 
     //                identifiantField.setVisible(false);
     //                identifiantLabel.setVisible(false);
                 } else {
                     modifiedType = Type.Administrateur;
                     tacheStep = Step.Search;
-                    setFieldsForAdmins();
+                    searchTypeButton.setVisible(false);
+                    resultsTable.setVisible(true);
+//                    setFieldsForAdmins();
                     userSearchPanel.setVisible(false);
                     selectAllBox.setSelected(true);
                     selectAllBox.setVisible(false);
@@ -175,42 +212,84 @@ public class MenuModifier implements PlaceHolder {
         ActionListener validerListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("action performed()");
                 try {
                     ResultsTableModel resultsTableModel;
                     if (modifiedType == Type.Particulier) {
-                        Particulier particulier = null;
+
 
                         if (tacheStep == Step.Search) {
+                            if (selectAllBox.isSelected()){
 
-                            if (!(dateNaissanceField.getText().isEmpty()) && !(Particulier.isDateFormatOk(dateNaissanceField.getText()))) {
+                                    searchResult = new Particulier[DataHandler.annuaire.size()+DataHandler.listeAdmins.size()];
+                                    searchResult = DataHandler.annuaire.values().toArray(searchResult);
+                                    resultsTableModel = new ResultsTableModel(searchResult);
+                                    resultsTable.setModel(resultsTableModel);
 
-                                throw new Exception("le format de la date doit être MM/DD/YYYY");
-                            }
-                            searchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
-                            if (searchResult != null) {
-                                resultsTableModel = new ResultsTableModel(searchResult);
-                                resultsTable.setModel(resultsTableModel);
+
+
                                 resultsTable.setVisible(true);
                                 modifierPane.updateUI();
-
-                            } else {
-                                throw new Exception("aucun résultat");
                             }
-                            prepareSelection();
+                            else {
 
+                                if (!(dateNaissanceField.getText().isEmpty()) && !(Particulier.isDateFormatOk(dateNaissanceField.getText()))) {
+
+                                    throw new Exception("le format de la date doit être MM/DD/YYYY");
+                                }
+                                searchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
+                                if (searchResult != null) {
+                                    resultsTableModel = new ResultsTableModel(searchResult);
+                                    resultsTable.setModel(resultsTableModel);
+                                    resultsTable.setVisible(true);
+                                    modifierPane.updateUI();
+
+                                } else {
+                                    throw new Exception("aucun résultat");
+                                }
+
+                            }
+
+                            tacheStep = Step.Select;
+                            searchTypeButton.setEnabled(false);
+                            validerButton.setEnabled(false);
+                            stepField.setText("selectionnez un des résultat");
+
+                            resultsTable.addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    super.mouseClicked(e);
+
+                                    if (tacheStep == Step.Select){
+                                        System.out.println("mouse clicked on result");
+                                        try {
+                                            if (selectResult() != -1) {
+                                                System.out.println("clicking valider");
+                                                actionPerformed(new ActionEvent(resultsTable,RESULT_TABLE_EVENT_ID,"validateSelect"));
+                                            }
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    }
+                                }
+                            });
 
                         } else if (tacheStep == Step.Select) {
+                            System.out.println("select step validated");
                             int row = selectResult();
+                            resultsTable.setVisible(false);
+                            setPasswordFields(true);
+                            setSearchFields(true);
                             if (row != -1) {
 
-
+                                System.out.println("selection is number "+ row);
                                 particulier = (Particulier) searchResult[row];
 
                                 // bloc if de test
                                 if (particulier == null) {
                                     throw new Exception("particulier is null");
                                 }
-
+                                userSearchPanel.setVisible(true);
                                 loadParticuliersDatas(particulier);
                                 validateSelection();
                                 activateDelete(particulier);
@@ -218,8 +297,11 @@ public class MenuModifier implements PlaceHolder {
 
 
                         } else if (tacheStep == Step.change) {
+                            System.out.println("identifiant particulier = " + particulier.getIdentifiant());
                             System.out.println("modify activé");
-                            if (userType == Type.Particulier){ particulier = (Particulier) DataHandler.currentUser;}
+                            if (userType == Type.Particulier){
+                                particulier = (Particulier) DataHandler.currentUser;
+                            }
 
                             String nouvelIdentifiant = identifiantField.getText();
                             String nouveauNom = Particulier.formatNames(nomUserField.getText());
@@ -253,7 +335,7 @@ public class MenuModifier implements PlaceHolder {
                                         }
 
                                         if (Particulier.isNameFormatOk(nouveauNom) && Particulier.isNameFormatOk(nouveauPrenom) && Particulier.isDateFormatOk(nouvelleDateNaissance)) {
-                                            if (particulier.modify(new Particulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), Particulier.generateDate(), identifiantField.getText(), finalPassword))) {
+                                            if (particulier.modify(new Particulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), Particulier.generateDateModification(), identifiantField.getText(), finalPassword))) {
                                                 supprimerButton.setEnabled(false);
                                                 clearTextFields();
                                                 int response;
@@ -269,7 +351,7 @@ public class MenuModifier implements PlaceHolder {
                                                     validerButton.setText("chercher");
                                                     supprimerButton.setEnabled(false);
                                                     identifiantField.setEditable(true);
-                                                    statutUserBox.setEnabled(true);
+                                                    modifiedTypeBox.setEnabled(true);
                                                     clearTextFields();
 
                                                     tacheStep = Step.Search;
@@ -302,19 +384,45 @@ public class MenuModifier implements PlaceHolder {
                         }
                     } else {
 
-                        Administrateur administrateur = null;
+
                         if (tacheStep == Step.Search) {
                             System.out.println("test 3");
-                            searchResult = new Administrateur[DataHandler.listeAdmins.size()];
+                            searchResult = new Administrateur[DataHandler.listeAdmins.size()+DataHandler.annuaire.size()];
                             searchResult = DataHandler.listeAdmins.values().toArray(searchResult);
                             System.out.println("test 4");
                             resultsTableModel = new ResultsTableModel(searchResult);
                             resultsTable.setModel(resultsTableModel);
                             resultsTable.setVisible(true);
                             modifierPane.updateUI();
-                            prepareSelection();
+
+                            searchTypeButton.setEnabled(false);
+                            tacheStep = Step.Select;
+                            validerButton.setEnabled(false);
+                            stepField.setText("selectionnez un des résultat");
+
+                            resultsTable.addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    super.mouseClicked(e);
+
+                                    if (tacheStep == Step.Select){
+                                        System.out.println("mouse clicked on result");
+                                        try {
+                                            if (selectResult() != -1) {
+                                                System.out.println("clicking valider");
+                                                actionPerformed(new ActionEvent(resultsTable,RESULT_TABLE_EVENT_ID,"validateSelect"));
+                                            }
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    }
+                                }
+                            });
+
                         } else if (tacheStep == Step.Select) {
                             int row = selectResult();
+                            setPasswordFields(true);
+                            setSearchFields(true);
                             if (!(searchResult[row].getIdentifiant().equals(DataHandler.ROOT_ADMIN_ID))) {
                                 System.out.println("id is : " + identifiantField.getText());
                                 administrateur = (Administrateur) searchResult[row];
@@ -325,6 +433,7 @@ public class MenuModifier implements PlaceHolder {
                             } else {
                                 throw new Exception("le compte root Administrateur n'est pas modifiable");
                             }
+
                         } else if (tacheStep == Step.change) {
                             String nouvelIdentifiant = identifiantField.getText();
                             char[] finalPassword;
@@ -362,7 +471,7 @@ public class MenuModifier implements PlaceHolder {
                                                 tacheStep = Step.Search;
                                                 validerButton.setText("chercher");
                                                 supprimerButton.setEnabled(false);
-                                                statutUserBox.setEnabled(true);
+                                                modifiedTypeBox.setEnabled(true);
 
                                                 clearTextFields();
                                                 setPlaceHolders();
@@ -403,6 +512,11 @@ public class MenuModifier implements PlaceHolder {
     }
 
     public void loadParticuliersDatas(Particulier particulier){
+        dropPlaceHolder(identifiantField);
+        dropPlaceHolder(prenomUserField);
+        dropPlaceHolder(nomUserField);
+        dropPlaceHolder(dateNaissanceField);
+
         identifiantField.setText(particulier.getIdentifiant());
         nomUserField.setText(particulier.getNom());
         prenomUserField.setText(particulier.getPrenom());
@@ -412,29 +526,38 @@ public class MenuModifier implements PlaceHolder {
 
     public void manageSearchPanel(){
         setParticulierFields(false);
-        identifiantField.setVisible(true);
-        identifiantLabel.setVisible(true);
+
         SearchDialog dialog = new SearchDialog(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                dropPlaceHolder(dateNaissanceField);
 
                 switch (e.getID()){
-                    case SearchDialog.NAME_SEARCH_ID -> { showNameFields();}
+                    case SearchDialog.NAME_SEARCH_ID -> {
+                        showNameFields();
+                        setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+                        setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+                    }
                     case SearchDialog.ID_SEARCH_ID -> {
-                        setParticulierFields(false);
+                        setSearchFields(false);
+                        setPasswordFields(false);
+                        setPlaceHolder(identifiantField,IDENTIFIANT_PLACEHOLDER);
                         identifiantField.setVisible(true);
                         identifiantLabel.setVisible(true);
                     }
                     case SearchDialog.DATE_SEARCH_ID -> {
-                        setParticulierFields(false);
+                        setSearchFields(false);
+                        setPasswordFields(false);
+                        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
                         dateLabel.setVisible(true);
                         dateNaissanceField.setVisible(true);
                     }
                 }
             }
         },modifierPane);
+
         dialog.pack();
+        dialog.setLocationRelativeTo(modifierPane);
         dialog.setVisible(true);
     }
     public void setParticulierFields(boolean b){
@@ -446,22 +569,32 @@ public class MenuModifier implements PlaceHolder {
         dateLabel.setVisible(b);
 
     }
+    public void setSearchFields(boolean b){
+        nomUserField.setVisible(b);
+        nomUserLabel.setVisible(b);
+        prenomUserField.setVisible(b);
+        prenomUserLabel.setVisible(b);
+        dateNaissanceField.setVisible(b);
+        dateLabel.setVisible(b);
+        identifiantField.setVisible(b);
+        identifiantLabel.setVisible(b);
+    }
+    public void setPasswordFields(boolean b){
+        currentPasswordField.setVisible(b);
+        currentPasswordLabel.setVisible(b);
+        changePasswordButton.setVisible(b);
+
+    }
+
 
     public void showNameFields(){
+        setPasswordFields(false);
+        setSearchFields(false);
         nomUserField.setVisible(true);
         nomUserLabel.setVisible(true);
         prenomUserField.setVisible(true);
         prenomUserLabel.setVisible(true);
-        dateNaissanceField.setVisible(false);
-        dateLabel.setVisible(false);
-        identifiantField.setVisible(false);
-        identifiantLabel.setVisible(false);
-        currentPasswordField.setVisible(false);
-        currentPasswordLabel.setVisible(false);
-        newPasswordField.setVisible(false);
-        newPasswordLabel.setVisible(false);
-        newPasswordConfirmField.setVisible(false);
-        newPasswordConfirmLabel.setVisible(false);
+
     }
 
     public void activateDelete(Account account) throws Exception {
@@ -518,7 +651,7 @@ public class MenuModifier implements PlaceHolder {
                             validerButton.setText("chercher");
                             supprimerButton.setEnabled(false);
                             identifiantField.setEditable(true);
-                            statutUserBox.setEnabled(true);
+                            modifiedTypeBox.setEnabled(true);
                             clearTextFields();
                             setPlaceHolders();
                             tacheStep = Step.Search;
@@ -540,9 +673,11 @@ public class MenuModifier implements PlaceHolder {
 
 
     public void validateSelection(){
+        changePasswordButton.setVisible(true);
+        currentPasswordField.setVisible(true);
         validerButton.setEnabled(true);
         selectAllBox.setEnabled(false);
-        statutUserBox.setEnabled(false);
+        modifiedTypeBox.setEnabled(false);
         tacheStep = Step.change;
         supprimerButton.setEnabled(true);
         stepField.setText("entrer les valeurs à modifier");
@@ -552,27 +687,30 @@ public class MenuModifier implements PlaceHolder {
         userSearchPanel.setVisible(true);
     }
 
-    public void prepareSelection(){
-        tacheStep = Step.Select;
-        validerButton.setEnabled(false);
-        stepField.setText("selectionnez un des résultat et validez");
-        resultsTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (tacheStep == Step.Select){
-                    try {
-                        if (selectResult() != -1) {
-                            validerButton.doClick();
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        });
-
-    }
+//    public void prepareSelection(){
+//        tacheStep = Step.Select;
+//        validerButton.setEnabled(false);
+//        stepField.setText("selectionnez un des résultat et validez");
+//        resultsTable.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                super.mouseClicked(e);
+//
+//                if (tacheStep == Step.Select){
+//                    System.out.println("mouse clicked on result");
+//                    try {
+//                        if (selectResult() != -1) {
+//                            System.out.println("clicking valider");
+//                            validerButton.doClick();
+//                        }
+//                    } catch (Exception ex) {
+//                        ex.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
+//
+//    }
 
     public boolean confirmPassword(char[] password, char[] passwordConfirm) throws Exception {
 

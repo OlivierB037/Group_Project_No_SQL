@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
-public class AjouterUser {
+public class AjouterUser implements PlaceHolder {
     private JPanel PanelAjouterUser;
     private JTextPane ajouterUserTextPane;
     private JTextField nomUserField;
@@ -38,6 +38,7 @@ public class AjouterUser {
     public AjouterUser() {
 
         type = Type.Particulier;
+        setPlaceHolders();
 //        identifiantField.setVisible(false);
 //        identifiantLabel.setVisible(false);
 //        passwordField.setVisible(false);
@@ -130,7 +131,7 @@ public class AjouterUser {
                                     }
                                 }
                                 else{
-                                    if (new Particulier(nom,prenom,date,Particulier.generateDate(),identifiant,password).ajouter()){
+                                    if (new Particulier(nom,prenom,date,Particulier.generateDateModification(),identifiant,password).ajouter()){
                                         clearFields();
                                         JOptionPane.showMessageDialog(PanelAjouterUser, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                                     }
@@ -164,6 +165,17 @@ public class AjouterUser {
         passwordLabel.setVisible(b);
         passwordConfirmField.setVisible(b);
         passwordConfirmLabel.setVisible(b);
+    }
+
+    public void setPlaceHolders(){
+        setPlaceHolder(identifiantField, IDENTIFIANT_PLACEHOLDER);
+        setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+        setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
+//        setPlaceHolder(newPasswordField,PASSWORD_PLACEHOLDER);
+//        setPlaceHolder(newPasswordConfirmField,PASSWORD_PLACEHOLDER);
+
+        setPlaceHolder(passwordField,PASSWORD_PLACEHOLDER);
     }
 
 

@@ -4,15 +4,15 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MenuConsulter {
+public class MenuConsulter implements PlaceHolder{
 
     private JPanel consultPane;
     private JPanel userSearchPanel;
     private JTextField nomUserField;
     private JTextField prenomUserField;
     private JTextField identifiantField;
-    private JFormattedTextField dateUserField;
-    private JComboBox statutUserBox;
+    private JTextField dateNaissanceField;
+    private JComboBox userTypeBox;
 
     private JTable resultsTable;
     private JButton validerButton;
@@ -29,22 +29,28 @@ public class MenuConsulter {
     private Account[] accountSearchResult;
     private enum Type {Particulier, Administrateur}
     private Type type;
+    private MenuPrincipal menuPrincipal;
 
 
-    private boolean firstQuery;
 
 
     public MenuConsulter() {
 
 
+
+
         if (DataHandler.currentUser instanceof Administrateur) {
 
-            statutUserBox.setVisible(true);
+            userTypeBox.setVisible(true);
 
         }
         else{
-            statutUserBox.setSelectedItem("Particulier");
-            statutUserBox.setVisible(false);
+            userTypeBox.setSelectedItem("Particulier");
+            userTypeBox.setVisible(false);
+            showNameFields();
+            setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+            setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+
 
         }
         type = Type.Particulier;
@@ -53,12 +59,16 @@ public class MenuConsulter {
 
 
         searchTypeButton.addActionListener(e -> {
+            hideAllFields();
+//            setPlaceHolders();
             manageSearchPanel();
         });
 
 
+
         selectAllBox.addActionListener((listener) ->{
             if (selectAllBox.isSelected()){
+                dropPlaceHolder(dateNaissanceField);
                 searchTypeButton.setVisible(false);
                 userSearchPanel.setVisible(false);
                 validerButton.setVisible(false);
@@ -76,26 +86,31 @@ public class MenuConsulter {
             }
         });
 
-        statutUserBox.addActionListener((e) -> {
-            if (statutUserBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
+        userTypeBox.addActionListener((e) -> {
+            if (userTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
                 type = Type.Particulier;
+                selectAllBox.setVisible(true);
 
-//                nomUserField.setVisible(true);
-//                nomUserLabel.setVisible(true);
-//                prenomUserField.setVisible(true);
-//                prenomUserLabel.setVisible(true);
-//                dateUserField.setVisible(true);
+                nomUserField.setVisible(true);
+                nomUserLabel.setVisible(true);
+                prenomUserField.setVisible(true);
+                prenomUserLabel.setVisible(true);
+//                dateNaissanceField.setVisible(true);
 //                dateLabel.setVisible(true);
 //                identifiantField.setVisible(false);
 //                identifiantLabel.setVisible(false);
             }
             else {
                 type = Type.Administrateur;
+                selectAllBox.setSelected(true);
+                selectAllBox.setVisible(false);
+                validerButton.doClick();
+
 //                nomUserField.setVisible(false);
 //                nomUserLabel.setVisible(false);
 //                prenomUserField.setVisible(false);
 //                prenomUserLabel.setVisible(false);
-//                dateUserField.setVisible(false);
+//                dateNaissanceField.setVisible(false);
 //                dateLabel.setVisible(false);
 //                identifiantField.setVisible(true);
 //                identifiantLabel.setVisible(true);
@@ -109,12 +124,12 @@ public class MenuConsulter {
                 try {
                     if (selectAllBox.isSelected()){
                         if (type == Type.Particulier) {
-                            particulierSearchResult = new Particulier[DataHandler.annuaire.size()];
+                            particulierSearchResult = new Particulier[DataHandler.annuaire.size()+DataHandler.listeAdmins.size()];
                             particulierSearchResult = DataHandler.annuaire.values().toArray(particulierSearchResult);
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
                         } else {
-                            accountSearchResult = new Administrateur[DataHandler.listeAdmins.size()];
+                            accountSearchResult = new Administrateur[DataHandler.listeAdmins.size()+DataHandler.annuaire.size()];
                             accountSearchResult = DataHandler.listeAdmins.values().toArray(accountSearchResult);
                             ResultsTableModel resultsTableModel = new ResultsTableModel(accountSearchResult);
                             resultsTable.setModel(resultsTableModel);
@@ -124,13 +139,13 @@ public class MenuConsulter {
                     }
                     else {
                         System.out.println("test consulter");
-                        if (!(dateUserField.getText().isEmpty()) && !(Particulier.isDateFormatOk(dateUserField.getText()))) {
+                        if (!(dateNaissanceField.getText().isEmpty()) && !(Particulier.isDateFormatOk(dateNaissanceField.getText()))) {
 
                             throw new Exception("le format de la date doit être MM/DD/YYYY");
                         }
 
 
-                        particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateUserField.getText(), false);
+                        particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
                         if (particulierSearchResult != null) {
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
@@ -155,32 +170,49 @@ public class MenuConsulter {
         });
     }
 
+    public void setPlaceHolders(){
+        setPlaceHolder(identifiantField, IDENTIFIANT_PLACEHOLDER);
+        setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+        setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
+//        setPlaceHolder(newPasswordField,PASSWORD_PLACEHOLDER);
+//        setPlaceHolder(newPasswordConfirmField,PASSWORD_PLACEHOLDER);
 
+
+    }
 
     public void manageSearchPanel(){
         hideAllFields();
-        identifiantField.setVisible(true);
-        identifiantLabel.setVisible(true);
+
+        resultsTable.setModel(new ResultsTableModel(null));
         SearchDialog dialog = new SearchDialog(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                dropPlaceHolder(dateNaissanceField);
 
                 switch (e.getID()){
-                    case SearchDialog.NAME_SEARCH_ID -> { showNameFields();}
+                    case SearchDialog.NAME_SEARCH_ID -> {
+                        showNameFields();
+                        setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+                        setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+                    }
                     case SearchDialog.ID_SEARCH_ID -> {
                         hideAllFields();
+                        setPlaceHolder(identifiantField,IDENTIFIANT_PLACEHOLDER);
                         identifiantField.setVisible(true);
                         identifiantLabel.setVisible(true);
                     }
                     case SearchDialog.DATE_SEARCH_ID -> {
                         hideAllFields();
+                        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
                         dateLabel.setVisible(true);
-                        dateUserField.setVisible(true);
+                        dateNaissanceField.setVisible(true);
                     }
+
                 }
             }
         },consultPane);
+        dialog.setLocationRelativeTo(consultPane);
         dialog.pack();
         dialog.setVisible(true);
     }
@@ -189,7 +221,7 @@ public class MenuConsulter {
         nomUserLabel.setVisible(false);
         prenomUserField.setVisible(false);
         prenomUserLabel.setVisible(false);
-        dateUserField.setVisible(false);
+        dateNaissanceField.setVisible(false);
         dateLabel.setVisible(false);
         identifiantField.setVisible(false);
         identifiantLabel.setVisible(false);
@@ -200,7 +232,7 @@ public class MenuConsulter {
         nomUserLabel.setVisible(true);
         prenomUserField.setVisible(true);
         prenomUserLabel.setVisible(true);
-        dateUserField.setVisible(false);
+        dateNaissanceField.setVisible(false);
         dateLabel.setVisible(false);
         identifiantField.setVisible(false);
         identifiantLabel.setVisible(false);

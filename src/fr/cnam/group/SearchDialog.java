@@ -15,6 +15,7 @@ public class SearchDialog extends JDialog {
     public static final int ID_SEARCH_ID = -290;
     public static final int DATE_SEARCH_ID = -280;
     private JButton searchByBirthDateButton;
+    private ActionListener listener;
 
     //    enum SearchType {
 //        searchByName("Rechercher par nom"),
@@ -26,12 +27,13 @@ public class SearchDialog extends JDialog {
 //            this.label = label;
 //        }
 //    }
-    public SearchDialog(ActionListener listener, Component owner) {
+    public SearchDialog(ActionListener _listener, Component owner) {
+        listener = _listener;
         this.setTitle("type de recherche");
         this.setSize(400, 400);
         this.setLocationRelativeTo(owner);
 
-        setModal(true);
+
 //        getRootPane().setDefaultButton(searchByIdButton);
         setContentPane(contentPane);
         setModal(true);
@@ -68,7 +70,7 @@ public class SearchDialog extends JDialog {
 
 
     private void onCancel() {
-        // add your code here if necessary
+        listener.actionPerformed(new ActionEvent(searchByNameButton, NAME_SEARCH_ID, NAME_SEARCH_COMMAND));
         dispose();
     }
 

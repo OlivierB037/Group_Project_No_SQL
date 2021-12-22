@@ -71,31 +71,7 @@ public class DataHandler {
     }
 
 
-//    public static boolean addParticulierToFile(Particulier particulier) { //inscrit le Particulier dans le fichier de sauvegarde des comptes et de l'annuaire
-//        File saveFile = new File(ANNUAIRE_FILE_PATH);
-//
-//        try {
-//
-//            FileWriter fileWriter = new FileWriter(saveFile, true);
-//            fileWriter.write(particulier.getIdentifiant() + DATA_SEPARATOR + particulier.getNom() + DATA_SEPARATOR + particulier.getPrenom() + DATA_SEPARATOR +
-//                    particulier.getDate_naissance() + DATA_SEPARATOR+ particulier.getDate_modification() + MAIN_SEPARATOR);
-//
-//            fileWriter.flush();
-//            fileWriter.close();
-//            FileEncryption fileEncryption = new FileEncryption(encryptionKey,encryptionSalt,encryptionIterations,encryptionKeyLength);
-//            String encryptedPassword = fileEncryption.encrypt(String.valueOf(particulier.getPassword()));
-//            fileWriter = new FileWriter(ACCOUNT_FILE_PATH,true);
-//            fileWriter.write(particulier.getIdentifiant()+ DATA_SEPARATOR+encryptedPassword+MAIN_SEPARATOR);
-//            fileWriter.flush();
-//            fileWriter.close();
-//
-//            return true;
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            return false;
-//        }
-//
-//    }
+
 
     static void clearFile(File file) throws Exception {
         FileWriter writer = new FileWriter(file);
@@ -134,24 +110,6 @@ public class DataHandler {
         fileWriter.flush();
         fileWriter.close();
     }
-
-
-
-
-//    static void addAdminToFile(Account admin) throws Exception { //inscrit l'Administrateur dans le fichier de sauvegarde des comptes
-//        File file = new File(ACCOUNT_FILE_PATH);
-//
-//        FileEncryption fileEncryption = new FileEncryption(encryptionKey,encryptionSalt,encryptionIterations,encryptionKeyLength);
-//        String encryptedPassword = fileEncryption.encrypt(String.valueOf(admin.getPassword()));
-//        FileWriter fileWriter = new FileWriter(file,true);
-//        fileWriter.write(ADMIN_SYMBOL+admin.getIdentifiant()+DATA_SEPARATOR);
-//        fileWriter.write(encryptedPassword);
-//        fileWriter.write(MAIN_SEPARATOR);
-//        fileWriter.flush();
-//        fileWriter.close();
-//
-//
-//    }
 
 
 
@@ -219,43 +177,7 @@ public class DataHandler {
 
             }
 
-//            String[] readData = null;
-//
-//            if (addedClass == Particulier.class){
-//                for (String s : dataGroups) {
-//
-//                    if (s != null) {
-//                        System.out.println("reading users datas : data : " + s);
-//                        readData = s.split(String.valueOf(DATA_SEPARATOR));
-//                        try{
-//                            File accountFile = new File(ACCOUNT_FILE_PATH);
-//                            scanner = new Scanner(accountFile);
-//                            String str = "";
-//                            while(scanner.hasNext()){
-//                                str = scanner.nextLine();
-//                                System.out.println("loadData : particulier : reading in accounts "+str);
-//                                if (!(str.startsWith("#")) && str.contains(readData[0])){
-//                                    System.out.println("identifiant found in file");
-//                                    break;
-//                                }
-//                                else{
-//                                    throw new Exception("can't find identifiant"+readData[0]+" in account file");
-//                                }
-//
-//
-//                            }
-//                            str = fileEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
-//                            //System.out.println("password is "+ str);
-//                            addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4],readData[0],str.toCharArray()));
-//                        }catch (Exception e){
-//
-//                        }
-//                    }
-//                }
-//            }
-//            else if (addedClass == Administrateur.class){
-//
-//            }
+
 
 
             for (String s : dataGroups) {

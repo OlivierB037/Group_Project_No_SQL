@@ -1,6 +1,5 @@
 package fr.cnam.group;
 
-import javax.swing.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +32,7 @@ public class Particulier extends Account {
 
 
 
-    public static String generateDate(){
+    public static String generateDateModification(){ //génère la date d'aujourd'hui
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(new Date());
     }

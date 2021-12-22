@@ -66,4 +66,8 @@ public interface PlaceHolder {
 //            }
 //        });
     }
+
+    default void dropPlaceHolder(JTextField textField){
+        textField.setText("");
+    }
 }
