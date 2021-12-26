@@ -50,6 +50,7 @@ public class DataHandler {
 
 
     public static boolean addAdminToDatabase(Administrateur admin) throws Exception { //enregistre l'admninistrateur dans le HashMap listeAdmins
+
         if(listeAdmins.putIfAbsent(admin.getIdentifiant(),admin) == null){
             System.out.println("admin ajouté au système");
             return true;
@@ -94,7 +95,7 @@ public class DataHandler {
             fileWriter.write(MAIN_SEPARATOR);
         }
         else if (account instanceof Particulier){
-            System.out.println("wrtiting particulier in file...");
+            System.out.println("writing particulier in file...");
             fileWriter.write(account.getIdentifiant()+ DATA_SEPARATOR+encryptedPassword+MAIN_SEPARATOR);
             File particulierFile = new File(ANNUAIRE_FILE_PATH);
             FileWriter particulierWriter = new FileWriter(particulierFile, true);
@@ -171,8 +172,9 @@ public class DataHandler {
             scanner  = new Scanner(file);
             int i = 0;
             while (scanner.hasNext()) {
-                dataGroups.add(i, scanner.nextLine());
-                System.out.println("reading users in file : data group " + i + " : " + dataGroups.get(i));
+                dataGroups.add(i, scanner.nextLine()); // lit chaque ligne du fichier
+
+//                System.out.println("reading users in file : data group " + i + " : " + dataGroups.get(i));
                 i++;
 
             }
@@ -180,14 +182,14 @@ public class DataHandler {
 
 
 
-            for (String s : dataGroups) {
+            for (String s : dataGroups) { //parcourt chaque ligne extraite du fichier
 
                 if (s != null) {
                     String[] readData = null;
                     //System.out.println("reading users datas : data : " + s);
-                    readData = s.split(String.valueOf(DATA_SEPARATOR));
+                    readData = s.split(String.valueOf(DATA_SEPARATOR)); // sépare chaque donnée utilisateur contenue dans les lignes du fichier
                     //System.out.println("size of readData: " + readData.length);
-                    for (String str : readData) {
+                    for (String str : readData) { // boucle servant uniquement a afficher l'utilisateur actuellement lu et ajouté dans le HashMap
 
                         if (str != null) {
                             System.out.println("reading users data : " + str);
@@ -195,19 +197,16 @@ public class DataHandler {
                     }
                     //System.out.println("ajout des données utilisateur");
                     try {
-                        if (addedClass == Particulier.class) {
-//                            if (readData[0].equals("#")){
-//                                System.out.println("loadData : particulier : skipping admin " + readData[1]);
-//                                continue;
-//                            }
+                        if (addedClass == Particulier.class) { //si l'utilisateur est un particulier, on ouvre fichier Accounts pour y trouver l'identifiant et le mot de passe présents dans le fichier Annuaire
+
                             File accountFile = new File(ACCOUNT_FILE_PATH);
                             scanner = new Scanner(accountFile);
                             String str = "";
                             while(scanner.hasNext()){
                                 str = scanner.nextLine();
-                                System.out.println("loadData : particulier : reading in accounts "+str);
+//                                System.out.println("loadData : particulier : reading in accounts "+str);
                                 if (!(str.startsWith("#")) && str.contains(readData[0])){
-                                    System.out.println("identifiant found in file");
+//                                    System.out.println("identifiant found in file");
                                     break;
                                 }
 
@@ -215,14 +214,14 @@ public class DataHandler {
 
                             }
                             str = fileEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
-                            //System.out.println("password is "+ str);
+                            System.out.println("password of "+ readData[0]+  " is "+ str);
                             addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4],readData[0],str.toCharArray()));
                         }
                         else if (addedClass == Administrateur.class){
                             if (readData[0].equals("#")) {
                                 System.out.println("loadData : admin : adding " + readData[1]);
                                 addAdminToDatabase(new Administrateur(readData[1], fileEncryption.decrypt(readData[2]).toCharArray()));
-                                //System.out.println("decrypted password : " + fileEncryption.decrypt(readData[2]));
+                                System.out.println("decrypted password : " + fileEncryption.decrypt(readData[2]));
                             }
                         }
 
@@ -248,28 +247,20 @@ public class DataHandler {
 
     public static void main(String[] args) throws Exception {
 
-//      try {
-//          currentUser = new Administrateur(new PasswordAuthentication("rootAdmin","rootPassword".toCharArray()));
-//
-//
-//      } catch (Exception e) {
-//          e.printStackTrace();
-//      }
-        System.out.println("date test 21/11/2005 :" + Particulier.isDateFormatOk("21/11/2005"));
-        System.out.println("date test 10/13/2005 :" + Particulier.isDateFormatOk("10/13/2005"));
-        System.out.println("date test 2005/11/10 :" + Particulier.isDateFormatOk("2005/11/10"));
-        System.out.println("mc cormick is : " + Particulier.isNameFormatOk(Particulier.formatNames("mc cormick")));
-        System.out.println(" jean pierre  is : " + Particulier.isNameFormatOk("jean pierre"));
-        System.out.println("mail sans fin is : "+ Administrateur.isIdentifiantFormatOk("aperikub@hotmail."));
-        System.out.println("mail sans point : "+ Administrateur.isIdentifiantFormatOk("aperikub@hotmailfr"));
-        System.out.println("mail point is : "+ Administrateur.isIdentifiantFormatOk("aperikubhotmail.fr"));
-        //System.out.println("saumon length : " + "saumon".toCharArray().length);
-        FileEncryption fileEncryption = new FileEncryption(encryptionKey,encryptionSalt,encryptionIterations,encryptionKeyLength);
 
-//        for (int i = 0;i<100;i++) {
-//            System.out.println(fileEncryption.encrypt("tentative de debusquage du symbole"));
-//        }
-        new Thread(() -> {
+//        System.out.println("date test 21/11/2005 :" + Particulier.isDateFormatOk("21/11/2005"));
+//        System.out.println("date test 10/13/2005 :" + Particulier.isDateFormatOk("10/13/2005"));
+//        System.out.println("date test 2005/11/10 :" + Particulier.isDateFormatOk("2005/11/10"));
+//        System.out.println("mc cormick is : " + Particulier.isNameFormatOk(Particulier.formatNames("mc cormick")));
+//        System.out.println(" jean pierre  is : " + Particulier.isNameFormatOk("jean pierre"));
+//        System.out.println("mail sans fin is : "+ Administrateur.isIdentifiantFormatOk("aperikub@hotmail."));
+
+//        System.out.println("mail point is : "+ Administrateur.isIdentifiantFormatOk("aperikubhotmail.fr"));
+        //System.out.println("saumon length : " + "saumon".toCharArray().length);
+
+
+
+        new Thread(() -> { // on lance la lecture des fichiers dans un nouveau Thread pour ne pas bloquer l'interface graphique
             System.out.println("loading Admins");
             loadData(new File(ACCOUNT_FILE_PATH), Administrateur.class);
             System.out.println("loading particuliers");
@@ -284,23 +275,21 @@ public class DataHandler {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        try {
-            MyWindow myWindow = new MyWindow(); // classe héritant de JFrame, la fenêtre de l'UI, qui contient tous les éléments graphiques affichés
+
+        MyWindow myWindow = new MyWindow(); // classe héritant de JFrame, la fenêtre de l'UI, qui contient tous les éléments graphiques affichés
 
 
-            MenuPrincipal menuPrincipal = new MenuPrincipal(myWindow);
-            menuPrincipal.init(); //initialisation du menu principal
+        MenuPrincipal menuPrincipal = new MenuPrincipal(myWindow);
+        menuPrincipal.init(); //initialisation du menu principal
 
-            myWindow.setVisible(true);
-            myWindow.pack();
-            /*ouverture du menu principal*/
+        myWindow.setVisible(true);
+        myWindow.pack();
+        /*ouverture du menu principal*/
 
 
-            myWindow.setContentPane(menuPrincipal.getMenuPrincipalPanel()); // aplication du menu principal dans la fenêtre
-            myWindow.setMinimumSize(new Dimension(600,600));
-        } catch (ClassCastException e) {
-            System.out.println("class cast Exception caught --------------------");
-        }
+        myWindow.setContentPane(menuPrincipal.getMenuPrincipalPanel()); // aplication du menu principal dans la fenêtre
+        myWindow.setMinimumSize(new Dimension(600,600));
+
 
 
     }

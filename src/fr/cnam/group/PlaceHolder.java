@@ -16,6 +16,7 @@ public interface PlaceHolder {
     String PRENOM_PLACEHOLDER = "Prenom";
 
     default void setPlaceHolder(JTextField textField, String text){
+        System.out.println("setPlaceHolder called");
         if (textField instanceof JPasswordField){
             ((JPasswordField) textField).setEchoChar((char) 0);
         }

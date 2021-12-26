@@ -25,6 +25,7 @@ public abstract class Account {
             }
         }
         else{
+            System.out.println("identifiant isn't rootAdmin");
             throw new Exception("identifiant incorrect ");
         }
 
@@ -44,11 +45,12 @@ public abstract class Account {
 
     public static boolean isIdentifiantFormatOk(String id)  {
         System.out.println("name checked : " + id);
-        if (id.matches("[a-z0-9*\\-\\.]{1,30}@[a-z]{1,30}\\.[a-z]{2,20}")){
+        if (id.matches("[a-z0-9*\\-\\._]{1,30}@[a-z]{1,30}\\.[a-z]{2,20}")){
             return true;
         }
         else return false;
     }
+
 
     public static boolean isPasswordFormatOk(char[] password){
         if (password.length < 6 || password.length > 20)

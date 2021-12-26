@@ -85,29 +85,8 @@ public class AjouterUser implements PlaceHolder {
             public void actionPerformed(ActionEvent e) {
                 try {
 
-//                        String nom = nomUserField.getText();
-//                        String prenom = prenomUserField.getText();
-//                        String date = dateNaissanceField.getText();
-//                        char[] password = passwordField.getPassword();
-//                        char[] passwordConfirm = passwordConfirmField.getPassword();
-//                        if (Particulier.isDateFormatOk(date)) {
-//                            if(Particulier.isNameFormatOk(nom) && Particulier.isNameFormatOk(prenom)){
-//                                if(Particulier.trouverParticulier(nom,prenom,date,true) == null){
-//                                    if (Particulier.ajouterParticulier(nom, prenom, date) != null){
-//                                        clearFields();
-//                                        JOptionPane.showMessageDialog(PanelAjouterUser, "Particulier ajouté","succès",JOptionPane.INFORMATION_MESSAGE);
-//                                    }
-//                                }
-//                                else{
-//                                    throw new Exception("ce particulier' existe déja");
-//                                }
-//                            }
-//                            else{ throw new Exception("données incorrectes");}
-//                        }
-//                        else {
-//                        throw new Exception("le format de la date doit être MM/DD/YYYY");
-//                        }
 
+                        identifiantField.setText(identifiantField.getText().toLowerCase());
                         String identifiant = identifiantField.getText();
                         String nom = nomUserField.getText();
                         String prenom = prenomUserField.getText();

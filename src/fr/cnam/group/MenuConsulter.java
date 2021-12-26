@@ -90,7 +90,9 @@ public class MenuConsulter implements PlaceHolder{
             if (userTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
                 type = Type.Particulier;
                 selectAllBox.setVisible(true);
-
+                validerButton.setVisible(false);
+                searchTypeButton.setEnabled(false);
+                userSearchPanel.setVisible(true);
                 nomUserField.setVisible(true);
                 nomUserLabel.setVisible(true);
                 prenomUserField.setVisible(true);
@@ -104,16 +106,12 @@ public class MenuConsulter implements PlaceHolder{
                 type = Type.Administrateur;
                 selectAllBox.setSelected(true);
                 selectAllBox.setVisible(false);
+                userSearchPanel.setVisible(false);
+                searchTypeButton.setEnabled(false);
+                validerButton.setVisible(false);
                 validerButton.doClick();
 
-//                nomUserField.setVisible(false);
-//                nomUserLabel.setVisible(false);
-//                prenomUserField.setVisible(false);
-//                prenomUserLabel.setVisible(false);
-//                dateNaissanceField.setVisible(false);
-//                dateLabel.setVisible(false);
-//                identifiantField.setVisible(true);
-//                identifiantLabel.setVisible(true);
+
 
             }
         });

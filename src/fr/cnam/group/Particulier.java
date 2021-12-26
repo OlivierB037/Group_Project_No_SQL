@@ -24,7 +24,7 @@ public class Particulier extends Account {
        date_naissance = formatNames(date);
 //       identifiant = nom+'_'+prenom+'_'+date.subSequence(8,10);
        date_modification = _date_modification;
-        System.out.println(date_modification);
+
 
     }
 

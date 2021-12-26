@@ -135,6 +135,8 @@ public class MenuModifier implements PlaceHolder {
 
             selectAllBox.addActionListener(f -> {
                 if (selectAllBox.isSelected()) {
+                    System.out.println("select all validated, modified type is : " + modifiedType.name());
+                    tacheStep = Step.Search;
                     resultsTable.setVisible(true);
                     userSearchPanel.setVisible(false);
                     dropPlaceHolder(dateNaissanceField);
@@ -180,18 +182,16 @@ public class MenuModifier implements PlaceHolder {
                     modifiedType = Type.Particulier;
                     resultsTable.setModel(new ResultsTableModel(null));
                     tacheStep = Step.Search;
+                    validerButton.setEnabled(true);
                     searchTypeButton.setVisible(true);
                     userSearchPanel.setVisible(true);
                     selectAllBox.setSelected(false);
                     selectAllBox.setVisible(true);
+                    manageSearchPanel();
 
+                    identifiantField.setVisible(false);
+                    identifiantLabel.setVisible(false);
 
-
-
-//                    manageSearchPanel();
-
-    //                identifiantField.setVisible(false);
-    //                identifiantLabel.setVisible(false);
                 } else {
                     modifiedType = Type.Administrateur;
                     tacheStep = Step.Search;
@@ -221,10 +221,11 @@ public class MenuModifier implements PlaceHolder {
                         if (tacheStep == Step.Search) {
                             if (selectAllBox.isSelected()){
 
-                                    searchResult = new Particulier[DataHandler.annuaire.size()+DataHandler.listeAdmins.size()];
-                                    searchResult = DataHandler.annuaire.values().toArray(searchResult);
-                                    resultsTableModel = new ResultsTableModel(searchResult);
-                                    resultsTable.setModel(resultsTableModel);
+                                System.out.println("showing all particuliers");
+                                searchResult = new Particulier[DataHandler.annuaire.size()+DataHandler.listeAdmins.size()];
+                                searchResult = DataHandler.annuaire.values().toArray(searchResult);
+                                resultsTableModel = new ResultsTableModel(searchResult);
+                                resultsTable.setModel(resultsTableModel);
 
 
 
@@ -302,7 +303,7 @@ public class MenuModifier implements PlaceHolder {
                             if (userType == Type.Particulier){
                                 particulier = (Particulier) DataHandler.currentUser;
                             }
-
+                            identifiantField.setText(identifiantField.getText().toLowerCase());
                             String nouvelIdentifiant = identifiantField.getText();
                             String nouveauNom = Particulier.formatNames(nomUserField.getText());
                             String nouveauPrenom = Particulier.formatNames(prenomUserField.getText());
@@ -435,6 +436,7 @@ public class MenuModifier implements PlaceHolder {
                             }
 
                         } else if (tacheStep == Step.change) {
+                            identifiantField.setText(identifiantField.getText().toLowerCase());
                             String nouvelIdentifiant = identifiantField.getText();
                             char[] finalPassword;
                             if (!(administrateur.getIdentifiant().equals(nouvelIdentifiant))) {
@@ -512,6 +514,7 @@ public class MenuModifier implements PlaceHolder {
     }
 
     public void loadParticuliersDatas(Particulier particulier){
+        System.out.println("loading selected particulier's datas in text fields");
         dropPlaceHolder(identifiantField);
         dropPlaceHolder(prenomUserField);
         dropPlaceHolder(nomUserField);
@@ -715,6 +718,8 @@ public class MenuModifier implements PlaceHolder {
     public boolean confirmPassword(char[] password, char[] passwordConfirm) throws Exception {
 
         if (!Arrays.equals(password, passwordConfirm)) {
+            setPlaceHolder(newPasswordField,PASSWORD_PLACEHOLDER);
+            newPasswordConfirmField.setText("");
             return false;
         }
         else {

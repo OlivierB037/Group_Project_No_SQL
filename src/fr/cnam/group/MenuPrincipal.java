@@ -260,6 +260,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
                        }
                    }
                    else{
+                       System.out.println("connection: identifiant incorrect");
                        throw new Exception("identifiant incorrect");
                    }
                }
