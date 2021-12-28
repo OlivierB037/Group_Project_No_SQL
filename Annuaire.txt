@@ -1,2 +1,3 @@
+test@hotmail.fr;Testeur;Monsieur;01/01/2000;26/12/2021
 aperikub@hotmail.fr;Baylac;Olivier;07/08/1989;22/12/2021
 cartman@southp.fr;Cartman;Eric;11/10/1987;21/12/2021
