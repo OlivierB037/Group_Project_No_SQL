@@ -34,9 +34,12 @@ public class MenuModifier implements PlaceHolder {
     private JComboBox typeParticulierBox;
     private JLabel typeParticulierLabel;
 
-    private final int RESULT_TABLE_EVENT_ID = -372;
-    private final int SELECT_ALL_EVENT_ID = -382;
-    private final int RETURN_TO_MAIN_EVENT_ID = 370;
+    public static final int RESULT_TABLE_EVENT_ID = -372;
+    public static final int SELECT_ALL_EVENT_ID = -382;
+    public static final int RETURN_TO_MAIN_EVENT_ID = 370;
+    public static final int MODIFY_ANOTHER_EVENT_ID = 360;
+    public static final String MODIFY_ANOTHER_EVENT_COMMAND = "ModifyAnother";
+    public static final String RETURN_TO_MAIN_EVENT_COMMAND = "returnToMainFromModifier";
 
     private Particulier particulier;
     private Administrateur administrateur;
@@ -300,6 +303,11 @@ public class MenuModifier implements PlaceHolder {
                                 }
                                 userSearchPanel.setVisible(true);
                                 loadParticuliersDatas(particulier);
+                                if (userType == Type.Administrateur){
+                                    currentPasswordField.setText(String.valueOf(particulier.getPassword()));
+                                    currentPasswordField.setEditable(false);
+
+                                }
                                 validateSelection();
                                 activateDelete(particulier);
                             }
@@ -308,15 +316,20 @@ public class MenuModifier implements PlaceHolder {
                         } else if (tacheStep == Step.change) {
                             System.out.println("identifiant particulier = " + particulier.getIdentifiant());
                             System.out.println("modify activé");
-                            if (userType == Type.Particulier){
-                                particulier = (Particulier) DataHandler.currentUser;
-                            }
+
                             identifiantField.setText(identifiantField.getText().toLowerCase());
                             String nouvelIdentifiant = identifiantField.getText();
                             String nouveauNom = Particulier.formatNames(nomUserField.getText());
                             String nouveauPrenom = Particulier.formatNames(prenomUserField.getText());
                             String nouvelleDateNaissance = dateNaissanceField.getText();
                             char[] finalPassword;
+
+                            if (userType == Type.Particulier){
+                                particulier = (Particulier) DataHandler.currentUser;
+                            }
+//
+
+
                             if (typeParticulierBox.getSelectedItem().toString().isEmpty()){
                                 throw new Exception("vous devez selectionner un type de compte");
                             }
@@ -356,21 +369,24 @@ public class MenuModifier implements PlaceHolder {
                                                 }
                                                 else{
                                                     response = JOptionPane.NO_OPTION;
+                                                    System.out.println("user is particulier no asking ");
                                                 }
                                                 if (response == JOptionPane.YES_OPTION) {
 
-                                                    tacheStep = Step.Search;
-                                                    validerButton.setText("chercher");
-                                                    supprimerButton.setEnabled(false);
-                                                    identifiantField.setEditable(true);
-                                                    modifiedTypeBox.setEnabled(true);
-                                                    clearTextFields();
+//                                                    tacheStep = Step.Search;
+//                                                    validerButton.setText("chercher");
+//                                                    supprimerButton.setEnabled(false);
+//                                                    identifiantField.setEditable(true);
+//                                                    modifiedTypeBox.setEnabled(true);
+//                                                    clearTextFields();
+//
+//                                                    tacheStep = Step.Search;
+//
+//                                                    modifierPane.updateUI();
+                                                    menuPrincipal.actionPerformed(new ActionEvent(modifierPane,MODIFY_ANOTHER_EVENT_ID,MODIFY_ANOTHER_EVENT_COMMAND));
 
-                                                    tacheStep = Step.Search;
-
-                                                    modifierPane.updateUI();
                                                 } else {
-                                                    menuPrincipal.actionPerformed(new ActionEvent(modifierPane, RETURN_TO_MAIN_EVENT_ID, "returnToMainFromModifier"));
+                                                    menuPrincipal.actionPerformed(new ActionEvent(modifierPane, RETURN_TO_MAIN_EVENT_ID, RETURN_TO_MAIN_EVENT_COMMAND));
 
                                                 }
                                             } else {
@@ -492,7 +508,7 @@ public class MenuModifier implements PlaceHolder {
 
                                                 modifierPane.updateUI();
                                             } else {
-                                                menuPrincipal.actionPerformed(new ActionEvent(modifierPane, RETURN_TO_MAIN_EVENT_ID, "returnToMainFromModifier"));
+                                                menuPrincipal.actionPerformed(new ActionEvent(modifierPane, RETURN_TO_MAIN_EVENT_ID, RETURN_TO_MAIN_EVENT_COMMAND));
 
                                             }
                                         }
@@ -609,6 +625,8 @@ public class MenuModifier implements PlaceHolder {
         changePasswordButton.setVisible(b);
 
     }
+
+
 
 
     public void showNameFields(){
@@ -844,7 +862,7 @@ public class MenuModifier implements PlaceHolder {
 
 
 
-    public JPanel getConsultPane() {
+    public JPanel getModifierPane() {
         return modifierPane;
     }
 

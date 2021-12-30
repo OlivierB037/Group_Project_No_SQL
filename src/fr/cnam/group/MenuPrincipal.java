@@ -68,7 +68,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
 
                     MenuModifier menuModifier = new MenuModifier(this);
 
-                    myWindow.setContentPane(menuModifier.getConsultPane());
+                    myWindow.setContentPane(menuModifier.getModifierPane());
                 }
             }catch (Exception err){
                 JOptionPane.showMessageDialog(myWindow,err.getMessage());
@@ -222,10 +222,15 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
         System.out.println("action performed");
         try {
 
-            if(e.getSource() == topMenu.getReturnToMain()|| e.getActionCommand().equals("returnToMainFromModifier")){ // capture de l'event retourner au menu principal de la barre des taches
+            if(e.getSource() == topMenu.getReturnToMain()|| e.getActionCommand().equals(MenuModifier.RETURN_TO_MAIN_EVENT_COMMAND)){ // capture de l'event retourner au menu principal de la barre des taches ou de l'event retourner au menu principal du menu modifier
                 composeMenuPrincipal();
                 myWindow.setContentPane(menuPrincipalPanel);
                 topMenu.getReturnToMain().setVisible(false);
+            }
+            else if (e.getActionCommand().equals(MenuModifier.MODIFY_ANOTHER_EVENT_COMMAND)){
+                MenuModifier menuModifier = new MenuModifier(this);
+
+                myWindow.setContentPane(menuModifier.getModifierPane());
             }
             if (dialog != null) {
                 if (e.getSource().equals(dialog.getConnectButton())){ //capture de l'event du bouton connecter de la boite de dialogue de connexion
