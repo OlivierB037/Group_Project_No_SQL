@@ -11,10 +11,13 @@ public class SearchDialog extends JDialog {
     public static final String NAME_SEARCH_COMMAND = "nameSearch";
     public static final String ID_SEARCH_COMMAND = "IdSearch";
     public static final String DATE_SEARCH_COMMAND = "dateSearch";
+    public static final String TYPE_SEARCH_COMMAND = "typeSearch";
     public static final int NAME_SEARCH_ID = -300;
     public static final int ID_SEARCH_ID = -290;
     public static final int DATE_SEARCH_ID = -280;
+    public static final int TYPE_SEARCH_ID = -270;
     private JButton searchByBirthDateButton;
+    private JButton searchByTypeButton;
     private ActionListener listener;
 
     //    enum SearchType {
@@ -48,6 +51,10 @@ public class SearchDialog extends JDialog {
         });
         searchByBirthDateButton.addActionListener(e ->{
             listener.actionPerformed(new ActionEvent(searchByBirthDateButton,DATE_SEARCH_ID,DATE_SEARCH_COMMAND));
+            dispose();
+        });
+        searchByTypeButton.addActionListener(e -> {
+            listener.actionPerformed(new ActionEvent(searchByTypeButton,TYPE_SEARCH_ID,TYPE_SEARCH_COMMAND));
             dispose();
         });
 

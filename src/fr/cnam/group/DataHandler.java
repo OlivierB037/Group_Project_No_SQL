@@ -100,7 +100,7 @@ public class DataHandler {
             File particulierFile = new File(ANNUAIRE_FILE_PATH);
             FileWriter particulierWriter = new FileWriter(particulierFile, true);
             particulierWriter.write(account.getIdentifiant() + DATA_SEPARATOR + ((Particulier) account).getNom() + DATA_SEPARATOR + ((Particulier) account).getPrenom() + DATA_SEPARATOR +
-                    ((Particulier) account).getDate_naissance() + DATA_SEPARATOR+ ((Particulier) account).getDate_modification() + MAIN_SEPARATOR);
+                    ((Particulier) account).getDate_naissance() + DATA_SEPARATOR+ ((Particulier) account).getDate_modification() + DATA_SEPARATOR+ ((Particulier)  account).getTypeParticulier().toString()+ MAIN_SEPARATOR);
 
             particulierWriter.flush();
             particulierWriter.close();
@@ -215,7 +215,7 @@ public class DataHandler {
                             }
                             str = fileEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
                             System.out.println("password of "+ readData[0]+  " is "+ str);
-                            addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4],readData[0],str.toCharArray()));
+                            addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4], Particulier.TypeParticulier.valueOf(readData[5]),readData[0],str.toCharArray()));
                         }
                         else if (addedClass == Administrateur.class){
                             if (readData[0].equals("#")) {
@@ -258,7 +258,8 @@ public class DataHandler {
 //        System.out.println("mail point is : "+ Administrateur.isIdentifiantFormatOk("aperikubhotmail.fr"));
         //System.out.println("saumon length : " + "saumon".toCharArray().length);
 
-
+        Particulier.TypeParticulier typeParticulier = Particulier.TypeParticulier.Auditeur;
+        System.out.println("type to string : " + typeParticulier.toString());
 
         new Thread(() -> { // on lance la lecture des fichiers dans un nouveau Thread pour ne pas bloquer l'interface graphique
             System.out.println("loading Admins");

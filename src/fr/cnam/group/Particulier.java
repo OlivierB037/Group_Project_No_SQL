@@ -16,14 +16,17 @@ public class Particulier extends Account {
     private String date_naissance;
 
     private String date_modification;
+    enum TypeParticulier {Enseignant, Auditeur, Direction}
+    private TypeParticulier typeParticulier;
 
-    public Particulier(String _nom, String _prenom, String date, String _date_modification, String identifiant, char[] password) throws Exception {
+    public Particulier(String _nom, String _prenom, String date, String _date_modification,TypeParticulier _typeParticulier, String identifiant, char[] password) throws Exception {
         super(identifiant, password);
-       nom = formatNames(_nom);
-       prenom = formatNames(_prenom);
-       date_naissance = formatNames(date);
+        typeParticulier = _typeParticulier;
+        nom = formatNames(_nom);
+        prenom = formatNames(_prenom);
+        date_naissance = formatNames(date);
 //       identifiant = nom+'_'+prenom+'_'+date.subSequence(8,10);
-       date_modification = _date_modification;
+        date_modification = _date_modification;
 
 
     }
@@ -66,6 +69,25 @@ public class Particulier extends Account {
 
             });
         }
+        return (i.get() == 0) ? null : particuliersTrouves;
+
+    }
+    public static Particulier[] trouverParticulier(TypeParticulier searchedType) {
+        //String identifiant;
+
+        Particulier[] particuliersTrouves = new Particulier[DataHandler.annuaire.size()];
+        AtomicInteger i = new AtomicInteger();
+
+        DataHandler.annuaire.forEach((identifiant, particulier) -> {
+
+            if (particulier.getTypeParticulier().equals(searchedType)) {
+                System.out.println("correspondance " + searchedType.toString());
+                particuliersTrouves[i.get()] = particulier;
+                i.getAndIncrement();
+            }
+
+        });
+
         return (i.get() == 0) ? null : particuliersTrouves;
 
     }
@@ -251,6 +273,10 @@ public class Particulier extends Account {
             System.out.println("erreur lors de l'ajout au système");
             return false;
         }
+    }
+
+    public TypeParticulier getTypeParticulier() {
+        return typeParticulier;
     }
 
     public String getDate_modification() {

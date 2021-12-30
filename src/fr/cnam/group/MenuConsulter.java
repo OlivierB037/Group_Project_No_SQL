@@ -23,10 +23,12 @@ public class MenuConsulter implements PlaceHolder{
     private JLabel identifiantLabel;
     private JLabel dateLabel;
     private JButton searchTypeButton;
+    private JLabel typeParticulierLabel;
+    private JComboBox typeParticulierBox;
 
 
     private Particulier[] particulierSearchResult;
-    private Account[] accountSearchResult;
+    private Administrateur[] adminSearchResult;
     private enum Type {Particulier, Administrateur}
     private Type type;
     private MenuPrincipal menuPrincipal;
@@ -71,10 +73,14 @@ public class MenuConsulter implements PlaceHolder{
                 dropPlaceHolder(dateNaissanceField);
                 searchTypeButton.setVisible(false);
                 userSearchPanel.setVisible(false);
+                typeParticulierLabel.setVisible(false);
+                typeParticulierBox.setVisible(false);
                 validerButton.setVisible(false);
                 validerButton.doClick();
             }
             else{
+                typeParticulierLabel.setVisible(true);
+                typeParticulierBox.setVisible(true);
                 searchTypeButton.setVisible(true);
                 validerButton.setVisible(true);
                 userSearchPanel.setVisible(true);
@@ -97,6 +103,8 @@ public class MenuConsulter implements PlaceHolder{
                 nomUserLabel.setVisible(true);
                 prenomUserField.setVisible(true);
                 prenomUserLabel.setVisible(true);
+                typeParticulierBox.setVisible(false);
+                typeParticulierLabel.setVisible(false);
 //                dateNaissanceField.setVisible(true);
 //                dateLabel.setVisible(true);
 //                identifiantField.setVisible(false);
@@ -116,6 +124,7 @@ public class MenuConsulter implements PlaceHolder{
             }
         });
 
+
         validerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,9 +136,9 @@ public class MenuConsulter implements PlaceHolder{
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
                         } else {
-                            accountSearchResult = new Administrateur[DataHandler.listeAdmins.size()+DataHandler.annuaire.size()];
-                            accountSearchResult = DataHandler.listeAdmins.values().toArray(accountSearchResult);
-                            ResultsTableModel resultsTableModel = new ResultsTableModel(accountSearchResult);
+                            adminSearchResult = new Administrateur[DataHandler.listeAdmins.size()+DataHandler.annuaire.size()];
+                            adminSearchResult = DataHandler.listeAdmins.values().toArray(adminSearchResult);
+                            ResultsTableModel resultsTableModel = new ResultsTableModel(adminSearchResult);
                             resultsTable.setModel(resultsTableModel);
                         }
                         resultsTable.setVisible(true);
@@ -142,8 +151,12 @@ public class MenuConsulter implements PlaceHolder{
                             throw new Exception("le format de la date doit être MM/DD/YYYY");
                         }
 
-
-                        particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
+                        if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
+                            particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
+                        }
+                        else {
+                            particulierSearchResult = Particulier.trouverParticulier(Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()));
+                        }
                         if (particulierSearchResult != null) {
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
@@ -206,6 +219,11 @@ public class MenuConsulter implements PlaceHolder{
                         dateLabel.setVisible(true);
                         dateNaissanceField.setVisible(true);
                     }
+                    case SearchDialog.TYPE_SEARCH_ID -> {
+                        hideAllFields();
+                        typeParticulierBox.setVisible(true);
+                        typeParticulierLabel.setVisible(true);
+                    }
 
                 }
             }
@@ -234,6 +252,8 @@ public class MenuConsulter implements PlaceHolder{
         dateLabel.setVisible(false);
         identifiantField.setVisible(false);
         identifiantLabel.setVisible(false);
+        typeParticulierBox.setVisible(false);
+        typeParticulierLabel.setVisible(false);
     }
 
 

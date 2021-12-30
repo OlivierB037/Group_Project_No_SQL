@@ -31,6 +31,8 @@ public class MenuModifier implements PlaceHolder {
     private JLabel currentPasswordLabel;
     private JButton searchTypeButton;
     private JButton changePasswordButton;
+    private JComboBox typeParticulierBox;
+    private JLabel typeParticulierLabel;
 
     private final int RESULT_TABLE_EVENT_ID = -372;
     private final int SELECT_ALL_EVENT_ID = -382;
@@ -183,6 +185,7 @@ public class MenuModifier implements PlaceHolder {
                     resultsTable.setModel(new ResultsTableModel(null));
                     tacheStep = Step.Search;
                     validerButton.setEnabled(true);
+
                     searchTypeButton.setVisible(true);
                     userSearchPanel.setVisible(true);
                     selectAllBox.setSelected(false);
@@ -238,7 +241,12 @@ public class MenuModifier implements PlaceHolder {
 
                                     throw new Exception("le format de la date doit être MM/DD/YYYY");
                                 }
-                                searchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
+                                if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
+                                    searchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
+                                }
+                                else{
+                                    searchResult = Particulier.trouverParticulier(Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()));
+                                }
                                 if (searchResult != null) {
                                     resultsTableModel = new ResultsTableModel(searchResult);
                                     resultsTable.setModel(resultsTableModel);
@@ -309,6 +317,9 @@ public class MenuModifier implements PlaceHolder {
                             String nouveauPrenom = Particulier.formatNames(prenomUserField.getText());
                             String nouvelleDateNaissance = dateNaissanceField.getText();
                             char[] finalPassword;
+                            if (typeParticulierBox.getSelectedItem().toString().isEmpty()){
+                                throw new Exception("vous devez selectionner un type de compte");
+                            }
 
                             if (Account.isIdentifiantFormatOk(nouvelIdentifiant)) {
                                 if (!(particulier.getIdentifiant().equals(nouvelIdentifiant))) {
@@ -336,7 +347,7 @@ public class MenuModifier implements PlaceHolder {
                                         }
 
                                         if (Particulier.isNameFormatOk(nouveauNom) && Particulier.isNameFormatOk(nouveauPrenom) && Particulier.isDateFormatOk(nouvelleDateNaissance)) {
-                                            if (particulier.modify(new Particulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), Particulier.generateDateModification(), identifiantField.getText(), finalPassword))) {
+                                            if (particulier.modify(new Particulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), Particulier.generateDateModification(), Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()), identifiantField.getText(), finalPassword))) {
                                                 supprimerButton.setEnabled(false);
                                                 clearTextFields();
                                                 int response;
@@ -519,7 +530,7 @@ public class MenuModifier implements PlaceHolder {
         dropPlaceHolder(prenomUserField);
         dropPlaceHolder(nomUserField);
         dropPlaceHolder(dateNaissanceField);
-
+        typeParticulierBox.setSelectedItem(particulier.getTypeParticulier().toString());
         identifiantField.setText(particulier.getIdentifiant());
         nomUserField.setText(particulier.getNom());
         prenomUserField.setText(particulier.getPrenom());
@@ -555,6 +566,12 @@ public class MenuModifier implements PlaceHolder {
                         dateLabel.setVisible(true);
                         dateNaissanceField.setVisible(true);
                     }
+                    case SearchDialog.TYPE_SEARCH_ID -> {
+                        setSearchFields(false);
+                        setPasswordFields(false);
+                        typeParticulierBox.setVisible(true);
+                        typeParticulierLabel.setVisible(true);
+                    }
                 }
             }
         },modifierPane);
@@ -570,6 +587,8 @@ public class MenuModifier implements PlaceHolder {
         prenomUserLabel.setVisible(b);
         dateNaissanceField.setVisible(b);
         dateLabel.setVisible(b);
+        typeParticulierBox.setVisible(b);
+        typeParticulierLabel.setVisible(b);
 
     }
     public void setSearchFields(boolean b){
@@ -581,6 +600,8 @@ public class MenuModifier implements PlaceHolder {
         dateLabel.setVisible(b);
         identifiantField.setVisible(b);
         identifiantLabel.setVisible(b);
+        typeParticulierBox.setVisible(b);
+        typeParticulierLabel.setVisible(b);
     }
     public void setPasswordFields(boolean b){
         currentPasswordField.setVisible(b);

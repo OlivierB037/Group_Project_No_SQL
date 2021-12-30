@@ -28,7 +28,9 @@ public class ResultsTableModel <T> extends AbstractTableModel {
                 columnsNames.add("Nom");
                 columnsNames.add("Prénom");
                 columnsNames.add("Date de naissance");
-                columnsNames.add("dernière modification");
+                columnsNames.add("Dernière modification");
+                columnsNames.add("Type de compte");
+                columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
@@ -46,15 +48,16 @@ public class ResultsTableModel <T> extends AbstractTableModel {
                         line.add(p.getPrenom());
                         line.add(p.getDate_naissance());
                         line.add(p.getDate_modification());
+                        line.add(p.getTypeParticulier().toString());
                         values.add(line);
                     }
                 }
-            } else if (resultArray instanceof Account[]){
+            } else if (resultArray instanceof Administrateur[]){
                 columnsNames.add("Identifiant");
                 columnsTypes.add(String.class.getName());
                 System.out.println("resultTableModel : array type is Administrateur");
-                Account[] adminArray = (Account[]) Arrays.copyOf(resultArray,resultArray.length);
-                for (Account p : adminArray) {
+                Administrateur[] adminArray = (Administrateur[]) Arrays.copyOf(resultArray,resultArray.length);
+                for (Administrateur p : adminArray) {
                     if (p != null) {
                         ArrayList<String> line = new ArrayList<>();
                         line.add(p.getIdentifiant());

@@ -25,6 +25,8 @@ public class AjouterUser implements PlaceHolder {
     private JLabel identifiantLabel;
     private JPasswordField passwordConfirmField;
     private JLabel passwordConfirmLabel;
+    private JComboBox typeParticulierBox;
+    private JLabel typeParticulierLabel;
 
     private enum Type {Particulier, Administrateur}
     private Type type;
@@ -49,7 +51,7 @@ public class AjouterUser implements PlaceHolder {
         addedTypeBox.addActionListener(e -> {
             if (addedTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
                 type = Type.Particulier;
-
+                setFieldsForParticulier();
 //                passwordField.setVisible(true);
 //                passwordLabel.setVisible(true);
 //                passwordConfirmField.setVisible(true);
@@ -110,9 +112,20 @@ public class AjouterUser implements PlaceHolder {
                                     }
                                 }
                                 else{
-                                    if (new Particulier(nom,prenom,date,Particulier.generateDateModification(),identifiant,password).ajouter()){
-                                        clearFields();
-                                        JOptionPane.showMessageDialog(PanelAjouterUser, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                    Particulier.TypeParticulier typeParticulier;
+                                    try {
+                                        typeParticulier  = Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString());
+                                    }catch (IllegalArgumentException ex){
+                                        throw new Exception("veuillez sélectionner un type de Particulier");
+                                    }
+                                    if (typeParticulierBox.getSelectedItem().toString().isEmpty()){
+                                        throw new Exception("veuillez sélectionner un type de Particulier");
+                                    }
+                                    else {
+                                        if (new Particulier(nom, prenom, date, Particulier.generateDateModification(),typeParticulier, identifiant, password).ajouter()) {
+                                            clearFields();
+                                            JOptionPane.showMessageDialog(PanelAjouterUser, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                        }
                                     }
                                 }
                             } else {
@@ -168,7 +181,8 @@ public class AjouterUser implements PlaceHolder {
         passwordLabel.setVisible(true);
         passwordConfirmField.setVisible(true);
         passwordConfirmLabel.setVisible(true);
-
+        typeParticulierBox.setVisible(false);
+        typeParticulierLabel.setVisible(false);
         nomUserField.setVisible(false);
         nomUserLabel.setVisible(false);
         prenomUserField.setVisible(false);
@@ -178,6 +192,23 @@ public class AjouterUser implements PlaceHolder {
 
 
 
+    }
+
+    public void setFieldsForParticulier(){
+        passwordField.setVisible(true);
+        passwordLabel.setVisible(true);
+        passwordConfirmField.setVisible(true);
+        passwordConfirmLabel.setVisible(true);
+        nomUserField.setVisible(true);
+        nomUserLabel.setVisible(true);
+        prenomUserField.setVisible(true);
+        prenomUserLabel.setVisible(true);
+        dateNaissanceField.setVisible(true);
+        dateLabel.setVisible(true);
+        typeParticulierBox.setVisible(true);
+        typeParticulierLabel.setVisible(true);
+        identifiantField.setVisible(true);
+        identifiantLabel.setVisible(true);
     }
 
 
