@@ -11,3 +11,4 @@
 * valider en appuyant sur entrée et retourner au menu principal en appuyant sur escape
 * prise en compte du statut du particulier (enseignant , direction, auditeur)
 * bug après modif particulier, ne revient pas a l'ecran de recherche
+* revenir au menu et déconnexion si l'utilisateur supprime son compte

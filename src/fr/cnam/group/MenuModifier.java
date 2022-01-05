@@ -38,8 +38,10 @@ public class MenuModifier implements PlaceHolder {
     public static final int SELECT_ALL_EVENT_ID = -382;
     public static final int RETURN_TO_MAIN_EVENT_ID = 370;
     public static final int MODIFY_ANOTHER_EVENT_ID = 360;
+    public static final int DISCONNECT_EVENT_ID = 350;
     public static final String MODIFY_ANOTHER_EVENT_COMMAND = "ModifyAnother";
     public static final String RETURN_TO_MAIN_EVENT_COMMAND = "returnToMainFromModifier";
+    public static final String DISCONNECT_EVENT_COMMAND = "disconnectUser";
 
     private Particulier particulier;
     private Administrateur administrateur;
@@ -314,6 +316,11 @@ public class MenuModifier implements PlaceHolder {
 
 
                         } else if (tacheStep == Step.change) {
+
+                            if (userType == Type.Particulier){
+                                particulier = (Particulier) DataHandler.currentUser;
+                            }
+
                             System.out.println("identifiant particulier = " + particulier.getIdentifiant());
                             System.out.println("modify activé");
 
@@ -323,11 +330,6 @@ public class MenuModifier implements PlaceHolder {
                             String nouveauPrenom = Particulier.formatNames(prenomUserField.getText());
                             String nouvelleDateNaissance = dateNaissanceField.getText();
                             char[] finalPassword;
-
-                            if (userType == Type.Particulier){
-                                particulier = (Particulier) DataHandler.currentUser;
-                            }
-//
 
 
                             if (typeParticulierBox.getSelectedItem().toString().isEmpty()){
@@ -369,7 +371,8 @@ public class MenuModifier implements PlaceHolder {
                                                 }
                                                 else{
                                                     response = JOptionPane.NO_OPTION;
-                                                    System.out.println("user is particulier no asking ");
+                                                    JOptionPane.showMessageDialog(modifierPane,"Modification effectuée, retour au menu Principal","Succès",JOptionPane.INFORMATION_MESSAGE);
+                                                    System.out.println("modification réussie ");
                                                 }
                                                 if (response == JOptionPane.YES_OPTION) {
 
@@ -650,12 +653,19 @@ public class MenuModifier implements PlaceHolder {
                         int modifyAnother;
                         int response;
                         if(account instanceof Particulier){
+
                             Particulier particulier = (Particulier) account;
-                            response = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous supprimer " + particulier.getPrenom() + " " +
-                                    particulier.getNom() + " ?", "confirmer suppression", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            if (userType == Type.Administrateur) {
+                                response = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous supprimer " + particulier.getPrenom() + " " +
+                                        particulier.getNom() + " ?", "confirmer suppression", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            }
+                            else{
+                                response = JOptionPane.showConfirmDialog(modifierPane, "Cette action est irréversible. \nVoulez vous vraiment supprimer  votre compte ?","suppression du compte", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            }
+
                             if (response == JOptionPane.YES_OPTION) {
                                 if (particulier.remove()) {
-                                    JOptionPane.showMessageDialog(modifierPane, "Particulier supprimé", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                    JOptionPane.showMessageDialog(modifierPane, "Compte supprimé", "succès", JOptionPane.INFORMATION_MESSAGE);
                                 } else {
                                     throw new Exception("echec de la suppression");
                                 }
@@ -664,10 +674,11 @@ public class MenuModifier implements PlaceHolder {
                             clearTextFields();
                             if (userType == Type.Administrateur) {
                                 modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre particulier", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                            }
-                            else{
+                            } else {
                                 modifyAnother = JOptionPane.NO_OPTION;
+                                menuPrincipal.actionPerformed(new ActionEvent(modifierPane,DISCONNECT_EVENT_ID,DISCONNECT_EVENT_COMMAND));
                             }
+
                         }  else {
                             if (account.checkPassword(currentPasswordField.getPassword())) {
                                 response = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous supprimer " +

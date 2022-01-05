@@ -1,4 +1,4 @@
 test@hotmail.fr;Testeur;Monsieur;01/01/2000;30/12/2021;Enseignant
-aperikub@hotmail.fr;Baylac;Olivier;07/08/1989;22/12/2021;Auditeur
+aperikub@hotmail.fr;Baylac;Olivier;08/07/1989;05/01/2022;Enseignant
 cheap_rick@citadelofricks.com;Sanchez;Rick;12/05/1961;30/12/2021;Enseignant
 cartman@southp.fr;Cartman;Eric;11/10/1987;21/12/2021;Auditeur

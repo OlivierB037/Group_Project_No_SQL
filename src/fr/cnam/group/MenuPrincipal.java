@@ -17,6 +17,9 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
     private JButton requestButton;
     private JButton quitterButton;
     private JButton connecterButton;
+    private JLabel statutTextField;
+
+
     ConnectDialog dialog;
     MyWindow myWindow;
     TopMenu topMenu;
@@ -129,6 +132,12 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
     private void composeMenuPrincipal(){// méthode réarrangeant le menu selon le statut de l'utilisateur
         if (DataHandler.currentUser == null){ //mode invité
             title.setText("Menu Principal");
+
+            String statut = "Vous n'êtes pas connecté(e).";
+
+
+            statutTextField.setText(statut);
+            menuPrincipalPanel.updateUI();
             connecterButton.setVisible(true);
             connecterButton.setText("Connection");
             ajouterButton.setVisible(false);
@@ -138,6 +147,13 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
         }
         else if (DataHandler.currentUser instanceof Administrateur){     //mode admin
             title.setText("Menu Administrateur");
+
+            String statut = "Vous êtes connecté(e) en tant que : "+DataHandler.currentUser.getIdentifiant();
+
+
+            statutTextField.setText(statut);
+            menuPrincipalPanel.updateUI();
+
             connecterButton.setVisible(true);
             connecterButton.setText("Déconnection");
             ajouterButton.setVisible(true);
@@ -148,6 +164,12 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
             modifierButton.setText("Modifier un Utilisateur ou un Administrateur");
         }
         else if (DataHandler.currentUser instanceof Particulier){ // mode particulier
+            title.setText("Menu Principal");
+            String statut = "Vous êtes connecté(e) en tant que : "+DataHandler.currentUser.getIdentifiant();
+
+            menuPrincipalPanel.updateUI();
+
+            statutTextField.setText(statut);
             connecterButton.setVisible(true);
             connecterButton.setText("Déconnection");
             ajouterButton.setVisible(false);
@@ -269,9 +291,9 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
                        throw new Exception("identifiant incorrect");
                    }
                }
-               else if (e.getSource() == dialog.getButtonDisconnect()){
+               else if (e.getSource() == dialog.getButtonDisconnect() || e.getActionCommand().equals(MenuModifier.DISCONNECT_EVENT_COMMAND)){
                    DataHandler.currentUser = null;
-                   JOptionPane.showMessageDialog(myWindow,"déconnexion réussie","déconnexion réussie",JOptionPane.INFORMATION_MESSAGE);
+                   //JOptionPane.showMessageDialog(myWindow,"déconnexion réussie","déconnexion réussie",JOptionPane.INFORMATION_MESSAGE);
                    composeMenuPrincipal();
                    dialog.dispose();
 
