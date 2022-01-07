@@ -6,23 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class ResultsTableModel <T> extends AbstractTableModel {
+public class ResultsTableModel extends AbstractTableModel {
     private final ArrayList<String> columnsNames = new ArrayList<>();
     private final ArrayList<String> columnsTypes = new ArrayList<>();
-
-
     private final ArrayList< ArrayList<String> > values = new ArrayList<>();
 
-    public  ResultsTableModel ( T[] resultArray ) throws IllegalArgumentException {
+    public <T> ResultsTableModel ( T[] resultArray ) throws IllegalArgumentException {
 
-        if (resultArray == null){
+        if (resultArray == null){ // vide le JTable
 
         }
         else {
-
-
-
-
             if (resultArray instanceof Particulier[]) {
                 columnsNames.add("Identifiant");
                 columnsNames.add("Nom");
@@ -61,8 +55,6 @@ public class ResultsTableModel <T> extends AbstractTableModel {
                     if (p != null) {
                         ArrayList<String> line = new ArrayList<>();
                         line.add(p.getIdentifiant());
-
-
                         values.add(line);
                     }
                 }

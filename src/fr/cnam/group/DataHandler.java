@@ -4,9 +4,8 @@ import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
+import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DataHandler {
@@ -32,6 +31,8 @@ public class DataHandler {
     static final byte[] encryptionSalt = {-42, 94, -104, -16, -123, 42, 121, 6, -72, 30};
     static final int encryptionIterations = 4000;
     static final int encryptionKeyLength = 128;
+
+    static boolean loadReady;
 
 
     public static boolean isIdentifiantavailable(String identifiant){
@@ -105,9 +106,6 @@ public class DataHandler {
             particulierWriter.flush();
             particulierWriter.close();
         }
-
-
-
         fileWriter.flush();
         fileWriter.close();
     }
@@ -128,12 +126,7 @@ public class DataHandler {
                     if(new BufferedReader(new FileReader(file)).lines().anyMatch(s ->  s.contains(ROOT_ADMIN_ID+DATA_SEPARATOR) )){// vérification de la présence du superUtilisateur rootAdmin
                         System.out.println("rootAdmin verification :root admin found in file");
                     }
-    //                new BufferedReader(new FileReader(file)).lines().forEach(s->{
-    //                    System.out.println("reading : "+ s);
-    //                    if (s.contains("rootAdmin"+DATA_SEPARATOR)){
-    //                        System.out.println("match found");
-    //                    }
-    //                });
+
                     else{
                         System.out.println("rootAdmin verification : Root admin not in file, creating root administrator");
 
@@ -173,7 +166,6 @@ public class DataHandler {
             int i = 0;
             while (scanner.hasNext()) {
                 dataGroups.add(i, scanner.nextLine()); // lit chaque ligne du fichier
-
 //                System.out.println("reading users in file : data group " + i + " : " + dataGroups.get(i));
                 i++;
 
@@ -209,9 +201,6 @@ public class DataHandler {
 //                                    System.out.println("identifiant found in file");
                                     break;
                                 }
-
-
-
                             }
                             str = fileEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
                             System.out.println("password of "+ readData[0]+  " is "+ str);
@@ -258,15 +247,25 @@ public class DataHandler {
 //        System.out.println("mail point is : "+ Administrateur.isIdentifiantFormatOk("aperikubhotmail.fr"));
         //System.out.println("saumon length : " + "saumon".toCharArray().length);
 
-        Particulier.TypeParticulier typeParticulier = Particulier.TypeParticulier.Auditeur;
-        System.out.println("type to string : " + typeParticulier.toString());
+        loadReady = false;
+        LoadingDialog loadingDialog = new LoadingDialog();
 
-        new Thread(() -> { // on lance la lecture des fichiers dans un nouveau Thread pour ne pas bloquer l'interface graphique
-            System.out.println("loading Admins");
-            loadData(new File(ACCOUNT_FILE_PATH), Administrateur.class);
-            System.out.println("loading particuliers");
-            loadData(new File(ANNUAIRE_FILE_PATH), Particulier.class);
+
+
+        new Thread(() -> { // affichage d'une boite de dialogue le temps du chargement des données
+            loadingDialog.setLocationRelativeTo(null);
+            loadingDialog.setUndecorated(true);
+            loadingDialog.pack();
+            loadingDialog.setVisible(true);
         }).start();
+        System.out.println("loading Admins");
+        loadData(new File(ACCOUNT_FILE_PATH), Administrateur.class);
+        System.out.println("loading particuliers");
+        loadData(new File(ANNUAIRE_FILE_PATH), Particulier.class);
+
+        Thread.sleep(5000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
+
+        loadingDialog.dispose();
 
         listeAdmins.forEach((id, admin)->{
             System.out.println("admin : " + id);
@@ -290,6 +289,11 @@ public class DataHandler {
 
         myWindow.setContentPane(menuPrincipal.getMenuPrincipalPanel()); // aplication du menu principal dans la fenêtre
         myWindow.setMinimumSize(new Dimension(600,600));
+
+
+
+
+
 
 
 

@@ -2,13 +2,12 @@
 * supprimer bouton déconnecter et changer bouton connection du menu principal en deconnexion
 
 
-* indiquer statut connecté ou non
-*renommer titre menus dynamiquement
 
-*garantir impossibilité d'ajouter ";" dans les fichiers
+
+
+
 
 *ajouter un moyen de récupérer identifiants perdus (particulier)
 * valider en appuyant sur entrée et retourner au menu principal en appuyant sur escape
-* prise en compte du statut du particulier (enseignant , direction, auditeur)
-* bug après modif particulier, ne revient pas a l'ecran de recherche
+
 * revenir au menu et déconnexion si l'utilisateur supprime son compte
