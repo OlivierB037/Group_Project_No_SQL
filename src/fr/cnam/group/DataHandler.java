@@ -237,24 +237,13 @@ public class DataHandler {
     public static void main(String[] args) throws Exception {
 
 
-//        System.out.println("date test 21/11/2005 :" + Particulier.isDateFormatOk("21/11/2005"));
-//        System.out.println("date test 10/13/2005 :" + Particulier.isDateFormatOk("10/13/2005"));
-//        System.out.println("date test 2005/11/10 :" + Particulier.isDateFormatOk("2005/11/10"));
-//        System.out.println("mc cormick is : " + Particulier.isNameFormatOk(Particulier.formatNames("mc cormick")));
-//        System.out.println(" jean pierre  is : " + Particulier.isNameFormatOk("jean pierre"));
-//        System.out.println("mail sans fin is : "+ Administrateur.isIdentifiantFormatOk("aperikub@hotmail."));
 
-//        System.out.println("mail point is : "+ Administrateur.isIdentifiantFormatOk("aperikubhotmail.fr"));
-        //System.out.println("saumon length : " + "saumon".toCharArray().length);
 
-        loadReady = false;
         LoadingDialog loadingDialog = new LoadingDialog();
 
 
 
         new Thread(() -> { // affichage d'une boite de dialogue le temps du chargement des données
-            loadingDialog.setLocationRelativeTo(null);
-            loadingDialog.setUndecorated(true);
             loadingDialog.pack();
             loadingDialog.setVisible(true);
         }).start();
@@ -263,7 +252,7 @@ public class DataHandler {
         System.out.println("loading particuliers");
         loadData(new File(ANNUAIRE_FILE_PATH), Particulier.class);
 
-        Thread.sleep(5000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
+        Thread.sleep(10000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
 
         loadingDialog.dispose();
 

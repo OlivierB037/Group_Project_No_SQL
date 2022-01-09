@@ -68,7 +68,15 @@ public class MenuModifier implements PlaceHolder {
         newPasswordConfirmField.setVisible(false);
         newPasswordConfirmLabel.setVisible(false);
 
-        if (DataHandler.currentUser instanceof Particulier){
+        if (DataHandler.currentUser instanceof Particulier){ // vérification du type d'utilisateur connecté
+
+            /*
+            si l'utilisateur est un particulier :
+              * tous les éléments graphiques servant à la recherche d'utilisateur sont cachés.
+              * la selection du type de compte a modifier est réglée sur Particulier et cachée
+              *
+
+             */
             userType = Type.Particulier;
             modifiedType = Type.Particulier;
             System.out.println("menu modifier : connecté en tant que particulier");
@@ -151,9 +159,13 @@ public class MenuModifier implements PlaceHolder {
             changePasswordButton.setVisible(false);
         });
 
+        /*
+        Listener de la modification du type de compte modifié (Particulier/Administrateur)
+         */
 
         modifiedTypeBox.addActionListener((e) -> {
-            if (userType == Type.Administrateur) {
+            if (userType == Type.Administrateur) { // type d'utilisateur : Administrateur
+
                 if (modifiedTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())) {
                     modifiedType = Type.Particulier;
                     resultsTable.setModel(new ResultsTableModel(null));
