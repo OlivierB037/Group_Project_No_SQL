@@ -1,10 +1,16 @@
-package fr.cnam.group;
+package fr.cnam.group.gui.menus;
+
+import fr.cnam.group.*;
+import fr.cnam.group.gui.PlaceHolder;
+import fr.cnam.group.gui.dialogs.SearchDialog;
+import fr.cnam.group.users.Administrateur;
+import fr.cnam.group.users.Particulier;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MenuConsulter implements PlaceHolder{
+public class MenuConsulter implements PlaceHolder {
 
     private JPanel consultPane;
     private JPanel userSearchPanel;

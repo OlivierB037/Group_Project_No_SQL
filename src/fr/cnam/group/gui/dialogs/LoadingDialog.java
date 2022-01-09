@@ -1,4 +1,4 @@
-package fr.cnam.group;
+package fr.cnam.group.gui.dialogs;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -36,7 +36,7 @@ public class LoadingDialog extends JDialog {
             return;
         }
         else if (a.length() < 4){
-            System.out.println("a = "+ a);
+//            System.out.println("a = "+ a);
             a += ".";
             chargementDesDonnéesEnLabel.setText(text + a);
             animate(a);

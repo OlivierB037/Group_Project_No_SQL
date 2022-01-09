@@ -1,13 +1,18 @@
-package fr.cnam.group;
+package fr.cnam.group.gui.menus;
 
 
+
+import fr.cnam.group.DataHandler;
+import fr.cnam.group.gui.PlaceHolder;
+import fr.cnam.group.users.Administrateur;
+import fr.cnam.group.users.Particulier;
 
 import javax.swing.*;
 import java.util.Arrays;
 
-public class AjouterUser implements PlaceHolder {
-    private JPanel PanelAjouterUser;
-    private JTextPane ajouterUserTextPane;
+public class MenuAjouter implements PlaceHolder {
+    private JPanel menuAjouterPanel;
+    private JTextPane menuAjouterTitle;
     private JTextField nomUserField;
     private JButton validerButton;
     private JLabel nomUserLabel;
@@ -31,7 +36,7 @@ public class AjouterUser implements PlaceHolder {
 
 
 
-    public AjouterUser() {
+    public MenuAjouter() {
 
         type = Type.Particulier;
         setPlaceHolders();
@@ -59,7 +64,7 @@ public class AjouterUser implements PlaceHolder {
                 char[] password = passwordField.getPassword();
                 char[] passwordConfirm = passwordConfirmField.getPassword();
                 if (!Arrays.equals(password, passwordConfirm)) {
-                    JOptionPane.showMessageDialog(PanelAjouterUser,"mot de passe non confirmé","erreur mot de passe",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(menuAjouterPanel,"mot de passe non confirmé","erreur mot de passe",JOptionPane.ERROR_MESSAGE);
                     System.out.println("mot de passe non confirmé.");
 
                 }
@@ -69,7 +74,7 @@ public class AjouterUser implements PlaceHolder {
                         if (type == Type.Administrateur) {
                             if (new Administrateur(identifiant, password).ajouter()) {
                                 clearFields();
-                                JOptionPane.showMessageDialog(PanelAjouterUser, "Administrateur ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(menuAjouterPanel, "Administrateur ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                             } else {
                                 throw new Exception("echec lors de l'ajout de l'administrateur");
                             }
@@ -87,7 +92,7 @@ public class AjouterUser implements PlaceHolder {
                             else {
                                 if (new Particulier(nom, prenom, date, Particulier.generateDateModification(),typeParticulier, identifiant, password).ajouter()) {
                                     clearFields();
-                                    JOptionPane.showMessageDialog(PanelAjouterUser, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                    JOptionPane.showMessageDialog(menuAjouterPanel, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                                 }
                             }
                         }
@@ -96,7 +101,7 @@ public class AjouterUser implements PlaceHolder {
                     }
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(PanelAjouterUser, ex.getMessage(), "erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(menuAjouterPanel, ex.getMessage(), "erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -178,8 +183,8 @@ public class AjouterUser implements PlaceHolder {
         return prenomUserField;
     }
 
-    public JPanel getPanelAjouterUser() {
-        return PanelAjouterUser;
+    public JPanel getMenuAjouterPanel() {
+        return menuAjouterPanel;
     }
 
 

@@ -1,15 +1,15 @@
-package fr.cnam.group;
+package fr.cnam.group.gui;
 
 import javax.swing.*;
 
-public class TopMenu extends JMenuBar {
+public class MenuBar extends JMenuBar {
 
 
         private JMenu rollMenu;
         private JMenuItem returnToMain;
         private JMenuItem quit;
 
-        public TopMenu() {
+        public MenuBar() {
             super();
             rollMenu = new JMenu("fichier");
 

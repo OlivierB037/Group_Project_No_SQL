@@ -1,12 +1,25 @@
 package fr.cnam.group;
 
+import fr.cnam.group.files.Annuaire;
+import fr.cnam.group.files.Comptes;
+import fr.cnam.group.files.FileEncryption;
+import fr.cnam.group.files.FilesHandler;
+import fr.cnam.group.gui.dialogs.LoadingDialog;
+import fr.cnam.group.gui.menus.MenuPrincipal;
+import fr.cnam.group.gui.MyWindow;
+import fr.cnam.group.users.Account;
+import fr.cnam.group.users.Administrateur;
+import fr.cnam.group.users.Particulier;
+
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+
+
 
 public class DataHandler {
 
@@ -20,17 +33,13 @@ public class DataHandler {
     public static final char MAIN_SEPARATOR = '\n';
     public static final char DATA_SEPARATOR = ';';
     public static final String ROOT_ADMIN_ID = "rootAdmin";
-    public static final String ACCOUNT_FILE_PATH = "Accounts.txt";
-    public static final String ADMIN_SYMBOL = "#";// symbole différenciant les admins des particuliers dans le fichier des comptes
-    public static final String ANNUAIRE_FILE_PATH = "Annuaire.txt";
+
+
+
 
     public static Account currentUser = null; // utilisateur connecté
 
-    //constantes de réglage du cryptage des mots de passe
-    static final char[] encryptionKey = "rootEncryptKey".toCharArray();
-    static final byte[] encryptionSalt = {-42, 94, -104, -16, -123, 42, 121, 6, -72, 30};
-    static final int encryptionIterations = 4000;
-    static final int encryptionKeyLength = 128;
+
 
     static boolean loadReady;
 
@@ -75,40 +84,8 @@ public class DataHandler {
 
 
 
-    static void clearFile(File file) throws Exception {
-        FileWriter writer = new FileWriter(file);
-        FileEncryption fileEncryption = new FileEncryption(encryptionKey,encryptionSalt,encryptionIterations,encryptionKeyLength);
-        String password = fileEncryption.encrypt("rootPassword");
-        if(file.getPath().equals(ACCOUNT_FILE_PATH)) {
-            writer.write(ADMIN_SYMBOL + DATA_SEPARATOR + "rootAdmin" + DATA_SEPARATOR + password + MAIN_SEPARATOR);
-        }
-        writer.flush();
-        writer.close();
-    }
-    static void addToFile(Account account) throws Exception {
-        File file = new File(ACCOUNT_FILE_PATH);
-        FileEncryption fileEncryption = new FileEncryption(encryptionKey,encryptionSalt,encryptionIterations,encryptionKeyLength);
-        String encryptedPassword = fileEncryption.encrypt(String.valueOf(account.getPassword()));
-        FileWriter fileWriter = new FileWriter(file,true);
-        if (account instanceof Administrateur){
-            fileWriter.write(ADMIN_SYMBOL+account.getIdentifiant()+DATA_SEPARATOR);
-            fileWriter.write(encryptedPassword);
-            fileWriter.write(MAIN_SEPARATOR);
-        }
-        else if (account instanceof Particulier){
-            System.out.println("writing particulier in file...");
-            fileWriter.write(account.getIdentifiant()+ DATA_SEPARATOR+encryptedPassword+MAIN_SEPARATOR);
-            File particulierFile = new File(ANNUAIRE_FILE_PATH);
-            FileWriter particulierWriter = new FileWriter(particulierFile, true);
-            particulierWriter.write(account.getIdentifiant() + DATA_SEPARATOR + ((Particulier) account).getNom() + DATA_SEPARATOR + ((Particulier) account).getPrenom() + DATA_SEPARATOR +
-                    ((Particulier) account).getDate_naissance() + DATA_SEPARATOR+ ((Particulier) account).getDate_modification() + DATA_SEPARATOR+ ((Particulier)  account).getTypeParticulier().toString()+ MAIN_SEPARATOR);
 
-            particulierWriter.flush();
-            particulierWriter.close();
-        }
-        fileWriter.flush();
-        fileWriter.close();
-    }
+
 
 
 
@@ -119,9 +96,9 @@ public class DataHandler {
         ArrayList<String> dataGroups = new ArrayList<>();
         Scanner scanner = null;
         try {
-            FileEncryption fileEncryption = new FileEncryption(encryptionKey,encryptionSalt,encryptionIterations,encryptionKeyLength);// classe générant le cryptage
+            FileEncryption fileEncryption = new FileEncryption(FilesHandler.encryptionKey,FilesHandler.encryptionSalt,FilesHandler.encryptionIterations,FilesHandler.encryptionKeyLength);// classe générant le cryptage
             if ((file.exists() ) ){ // vérification de la présence du fichier
-                if (file.getName().equals(ACCOUNT_FILE_PATH)) {
+                if (file instanceof Comptes) {
                     System.out.println("rootAdmin verification : admin file is present");
                     if(new BufferedReader(new FileReader(file)).lines().anyMatch(s ->  s.contains(ROOT_ADMIN_ID+DATA_SEPARATOR) )){// vérification de la présence du superUtilisateur rootAdmin
                         System.out.println("rootAdmin verification :root admin found in file");
@@ -134,7 +111,7 @@ public class DataHandler {
                         //System.out.println("encrypted password : " + password);
                         new FileWriter(file,true) {
                             {
-                                write(ADMIN_SYMBOL+DATA_SEPARATOR+"rootAdmin"+DATA_SEPARATOR+password+MAIN_SEPARATOR);
+                                write(Comptes.ADMIN_SYMBOL+DATA_SEPARATOR+"rootAdmin"+DATA_SEPARATOR+password+MAIN_SEPARATOR);
                                 flush();
                                 close();
                             }
@@ -145,14 +122,14 @@ public class DataHandler {
             }else{
                 System.out.println("rootAdmin verification : file " + file.getName() + " does not exist\n creating file..." );
                 if (file.createNewFile()){
-                    if(file.getName().equals(ACCOUNT_FILE_PATH)){
+                    if(file instanceof Comptes){
                         System.out.println("rootAdmin verification : creating root administrator");
 
                         String password = fileEncryption.encrypt("rootPassword");
 
                         new FileWriter(file) {
                             {
-                                write(ADMIN_SYMBOL+DATA_SEPARATOR+"rootAdmin"+DATA_SEPARATOR+password+MAIN_SEPARATOR);
+                                write(Comptes.ADMIN_SYMBOL+DATA_SEPARATOR+"rootAdmin"+DATA_SEPARATOR+password+MAIN_SEPARATOR);
                                 flush();
                                 close();
                             }
@@ -191,8 +168,8 @@ public class DataHandler {
                     try {
                         if (addedClass == Particulier.class) { //si l'utilisateur est un particulier, on ouvre fichier Accounts pour y trouver l'identifiant et le mot de passe présents dans le fichier Annuaire
 
-                            File accountFile = new File(ACCOUNT_FILE_PATH);
-                            scanner = new Scanner(accountFile);
+                            File comptes = new Comptes();
+                            scanner = new Scanner(comptes);
                             String str = "";
                             while(scanner.hasNext()){
                                 str = scanner.nextLine();
@@ -248,9 +225,9 @@ public class DataHandler {
             loadingDialog.setVisible(true);
         }).start();
         System.out.println("loading Admins");
-        loadData(new File(ACCOUNT_FILE_PATH), Administrateur.class);
+        loadData(new Comptes(), Administrateur.class);
         System.out.println("loading particuliers");
-        loadData(new File(ANNUAIRE_FILE_PATH), Particulier.class);
+        loadData(new Annuaire(), Particulier.class);
 
         Thread.sleep(10000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
 

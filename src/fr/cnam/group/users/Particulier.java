@@ -1,4 +1,9 @@
-package fr.cnam.group;
+package fr.cnam.group.users;
+
+import fr.cnam.group.DataHandler;
+import fr.cnam.group.files.Annuaire;
+import fr.cnam.group.files.Comptes;
+import fr.cnam.group.files.FilesHandler;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -16,7 +21,7 @@ public class Particulier extends Account {
     private String date_naissance;
 
     private String date_modification;
-    enum TypeParticulier {Enseignant, Auditeur, Direction}
+    public enum TypeParticulier {Enseignant, Auditeur, Direction}
     private TypeParticulier typeParticulier;
 
     public Particulier(String _nom, String _prenom, String date, String _date_modification,TypeParticulier _typeParticulier, String identifiant, char[] password) throws Exception {
@@ -178,13 +183,13 @@ public class Particulier extends Account {
 
         particuliers = DataHandler.annuaire.values().toArray(particuliers);
         int refClient = 0;
-        clearFile(new File(ANNUAIRE_FILE_PATH));
-        clearFile(new File(ACCOUNT_FILE_PATH));
+        FilesHandler.clearFile(new Annuaire());
+        FilesHandler.clearFile(new Comptes());
         for(Particulier p : particuliers) {
             System.out.println("reading from extracted data : " + p.getIdentifiant());
             if (p != null){
 
-                DataHandler.addToFile(p);
+                FilesHandler.addToFile(p);
 
 
 
@@ -227,13 +232,13 @@ public class Particulier extends Account {
 
         particuliers = DataHandler.annuaire.values().toArray(particuliers);
         int refClient = 0;
-        clearFile(new File(ANNUAIRE_FILE_PATH));
-        clearFile(new File(ACCOUNT_FILE_PATH));
+        FilesHandler.clearFile(new Annuaire());
+        FilesHandler.clearFile(new Comptes());
         for(Particulier p : particuliers) {
             System.out.println("reading from extracted data : " + p.getIdentifiant());
             if (p != null){
                 System.out.println("modifying" + p.getIdentifiant() + " to : " + newAccount.getIdentifiant());
-                DataHandler.addToFile(p);
+                FilesHandler.addToFile(p);
 
 
 
@@ -260,7 +265,7 @@ public class Particulier extends Account {
         if (DataHandler.annuaire.putIfAbsent(getIdentifiant(), this) == null) {
             System.out.println("particulier créé");
             try  {
-                DataHandler.addToFile(this);
+                FilesHandler.addToFile(this);
                 System.out.println("particulier ajouté. identifiant: : " + getIdentifiant());
                 return true;
             } catch (Exception e){

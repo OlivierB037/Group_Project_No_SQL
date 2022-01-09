@@ -1,6 +1,5 @@
-package fr.cnam.group;
+package fr.cnam.group.users;
 
-import java.io.IOException;
 import java.net.PasswordAuthentication;
 import java.util.Arrays;
 

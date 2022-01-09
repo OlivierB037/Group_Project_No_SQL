@@ -1,4 +1,7 @@
-package fr.cnam.group;
+package fr.cnam.group.gui.dialogs;
+
+import fr.cnam.group.DataHandler;
+import fr.cnam.group.gui.menus.MenuPrincipal;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

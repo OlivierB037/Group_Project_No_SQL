@@ -1,5 +1,8 @@
 package fr.cnam.group;
 
+import fr.cnam.group.users.Administrateur;
+import fr.cnam.group.users.Particulier;
+
 import javax.swing.table.AbstractTableModel;
 
 import java.util.ArrayList;

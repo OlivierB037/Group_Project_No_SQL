@@ -1,11 +1,16 @@
-package fr.cnam.group;
+package fr.cnam.group.users;
+
+import fr.cnam.group.DataHandler;
+import fr.cnam.group.files.Comptes;
+import fr.cnam.group.files.FilesHandler;
+
 
 import java.io.File;
 import java.io.IOException;
 
 import static fr.cnam.group.DataHandler.*;
 
-public class Administrateur extends Account{
+public class Administrateur extends Account {
     public Administrateur(String identifiant, char[] password) throws Exception {
         super(identifiant, password);
     }
@@ -40,12 +45,12 @@ public class Administrateur extends Account{
 
 
         int refClient = 0;
-        clearFile(new File(ACCOUNT_FILE_PATH));
+        FilesHandler.clearFile(new Comptes());
         for(Administrateur a : accounts) {
             System.out.println("reading from extracted data : " + a.getIdentifiant());
             if (a != null){
                 System.out.println("checking " + a.getIdentifiant());
-                DataHandler.addToFile(a);
+                FilesHandler.addToFile(a);
 
             } else {
 
@@ -77,12 +82,12 @@ public class Administrateur extends Account{
 
 
         int refClient = 0;
-        clearFile(new File(ACCOUNT_FILE_PATH));
+        FilesHandler.clearFile(new Comptes());
         for(Administrateur a : accounts) {
             System.out.println("reading from extracted data : " + a.getIdentifiant());
             if (a != null){
                 System.out.println("checking " + a.getIdentifiant());
-                DataHandler.addToFile(a);
+                FilesHandler.addToFile(a);
 
             } else {
 
@@ -107,7 +112,7 @@ public class Administrateur extends Account{
         try {
             if (listeAdmins.putIfAbsent(getIdentifiant(), this) == null){
                 System.out.println("admin créé");
-                addToFile(this);
+                FilesHandler.addToFile(this);
                 return true;
             }
             else{

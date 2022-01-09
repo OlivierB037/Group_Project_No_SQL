@@ -1,4 +1,11 @@
-package fr.cnam.group;
+package fr.cnam.group.gui.menus;
+
+import fr.cnam.group.DataHandler;
+import fr.cnam.group.gui.dialogs.ConnectDialog;
+import fr.cnam.group.gui.MyWindow;
+import fr.cnam.group.gui.MenuBar;
+import fr.cnam.group.users.Administrateur;
+import fr.cnam.group.users.Particulier;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,16 +29,16 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
 
     ConnectDialog dialog;
     MyWindow myWindow;
-    TopMenu topMenu;
+    MenuBar menuBar;
 
     public MenuPrincipal(MyWindow _myWindow){
         myWindow = _myWindow;
 
     }
     public void init(){
-        topMenu = new TopMenu();
-        topMenu.getReturnToMain().setVisible(false);
-        myWindow.setJMenuBar(topMenu);
+        menuBar = new MenuBar();
+        menuBar.getReturnToMain().setVisible(false);
+        myWindow.setJMenuBar(menuBar);
 
         myWindow.setVisible(true);
         myWindow.pack();
@@ -66,7 +73,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
                     JOptionPane.showMessageDialog(myWindow,"only administrateurs can access this section","Accès Refusé",JOptionPane.ERROR_MESSAGE);
 
                 } else {
-                    topMenu.getReturnToMain().setVisible(true);
+                    menuBar.getReturnToMain().setVisible(true);
 
 
                     MenuModifier menuModifier = new MenuModifier(this);
@@ -81,7 +88,7 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
         consulterButton.addActionListener(e -> {
             try {
 
-                topMenu.getReturnToMain().setVisible(true); // on rend visible l'option de retour au menu principal dans le menu "fichier"
+                menuBar.getReturnToMain().setVisible(true); // on rend visible l'option de retour au menu principal dans le menu "fichier"
 
 
                 MenuConsulter menuConsulter = new MenuConsulter();
@@ -98,12 +105,12 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
             try {
                 if (DataHandler.currentUser != null ) {
 
-                    topMenu.getReturnToMain().setVisible(true);
+                    menuBar.getReturnToMain().setVisible(true);
 
 
                     /*ouverture du menu ajouter un utilisateur*/
-                    AjouterUser ajouterUser = new AjouterUser();
-                    myWindow.setContentPane(ajouterUser.getPanelAjouterUser());
+                    MenuAjouter menuAjouter = new MenuAjouter();
+                    myWindow.setContentPane(menuAjouter.getMenuAjouterPanel());
 
 
                 }
@@ -124,9 +131,9 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
 
 
         quitterButton.addActionListener(e -> System.exit(0));
-        topMenu.getQuit().addActionListener(e -> System.exit(0));
+        menuBar.getQuit().addActionListener(e -> System.exit(0));
 
-        topMenu.getReturnToMain().addActionListener(this);
+        menuBar.getReturnToMain().addActionListener(this);
     }
 
     private void composeMenuPrincipal(){// méthode réarrangeant le menu selon le statut de l'utilisateur
@@ -244,10 +251,10 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener { // 
         System.out.println("action performed");
         try {
 
-            if(e.getSource() == topMenu.getReturnToMain()|| e.getActionCommand().equals(MenuModifier.RETURN_TO_MAIN_EVENT_COMMAND)){ // capture de l'event retourner au menu principal de la barre des taches ou de l'event retourner au menu principal du menu modifier
+            if(e.getSource() == menuBar.getReturnToMain()|| e.getActionCommand().equals(MenuModifier.RETURN_TO_MAIN_EVENT_COMMAND)){ // capture de l'event retourner au menu principal de la barre des taches ou de l'event retourner au menu principal du menu modifier
                 composeMenuPrincipal();
                 myWindow.setContentPane(menuPrincipalPanel);
-                topMenu.getReturnToMain().setVisible(false);
+                menuBar.getReturnToMain().setVisible(false);
             }
             else if (e.getActionCommand().equals(MenuModifier.MODIFY_ANOTHER_EVENT_COMMAND)){
                 MenuModifier menuModifier = new MenuModifier(this);

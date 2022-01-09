@@ -1,4 +1,4 @@
-package fr.cnam.group;
+package fr.cnam.group.gui;
 
 import javax.swing.*;
 import java.awt.*;
