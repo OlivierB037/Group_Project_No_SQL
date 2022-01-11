@@ -33,6 +33,7 @@ public class MenuConsulter implements PlaceHolder {
     private JComboBox typeParticulierBox;
 
 
+
     private Particulier[] particulierSearchResult;
     private Administrateur[] adminSearchResult;
     private enum Type {Particulier, Administrateur}
@@ -152,9 +153,9 @@ public class MenuConsulter implements PlaceHolder {
                     }
                     else {
                         System.out.println("test consulter");
-                        if (!(dateNaissanceField.getText().isEmpty()) && !(Particulier.isDateFormatOk(dateNaissanceField.getText()))) {
+                        if (!(dateNaissanceField.getText().isEmpty())) {
 
-                            throw new Exception("le format de la date doit être MM/DD/YYYY");
+                            Particulier.checkDateFormat(dateNaissanceField.getText());
                         }
 
                         if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
@@ -247,6 +248,7 @@ public class MenuConsulter implements PlaceHolder {
         dateLabel.setVisible(false);
         identifiantField.setVisible(false);
         identifiantLabel.setVisible(false);
+
     }
 
     public void showNameFields(){

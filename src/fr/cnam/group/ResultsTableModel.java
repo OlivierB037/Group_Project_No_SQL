@@ -25,8 +25,10 @@ public class ResultsTableModel extends AbstractTableModel {
                 columnsNames.add("Nom");
                 columnsNames.add("Prénom");
                 columnsNames.add("Date de naissance");
+                columnsNames.add("Adresse");
                 columnsNames.add("Dernière modification");
                 columnsNames.add("Type de compte");
+                columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
@@ -44,6 +46,7 @@ public class ResultsTableModel extends AbstractTableModel {
                         line.add(p.getNom());
                         line.add(p.getPrenom());
                         line.add(p.getDate_naissance());
+                        line.add(p.getAdresse());
                         line.add(p.getDate_modification());
                         line.add(p.getTypeParticulier().toString());
                         values.add(line);

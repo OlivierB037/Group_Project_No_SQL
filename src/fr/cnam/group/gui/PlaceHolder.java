@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public interface PlaceHolder {
 
@@ -14,6 +12,9 @@ public interface PlaceHolder {
     String IDENTIFIANT_PLACEHOLDER = "Adresse mail";
     String NOM_PLACEHOLDER = "Nom";
     String PRENOM_PLACEHOLDER = "Prenom";
+    String STREET_PLACEHOLDER = "ex: 1 rue de la paix";
+    String POSTAL_CODE_PLACEHOLDER = "ex: 75000";
+    String CITY_PLACEHOLDER = "ex: Toulouse";
 
     default void setPlaceHolder(JTextField textField, String text){
         System.out.println("setPlaceHolder called");

@@ -3,7 +3,8 @@
 
 
 
-
+* supprimer placeholders menu modifier
+* remplacer methodes isOk par Exceptions
 
 
 

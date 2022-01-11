@@ -1,9 +1,10 @@
 package fr.cnam.group.users;
 
+import fr.cnam.group.exceptions.FileException;
+import fr.cnam.group.exceptions.UserDataInputException;
+
 import java.net.PasswordAuthentication;
 import java.util.Arrays;
-
-import static fr.cnam.group.DataHandler.*;
 
 public abstract class Account {
 
@@ -15,21 +16,9 @@ public abstract class Account {
 
 
     public Account(String identifiant, char[] password) throws Exception {
-        if (identifiant.equals(ROOT_ADMIN_ID) || isIdentifiantFormatOk(identifiant) ){
-            if (isPasswordFormatOk(password)){
-                this.passwordSet = new PasswordAuthentication(identifiant,password);
-            }
-            else{
-                throw new Exception("format du mot de passe incorrect");
-            }
-        }
-        else{
-            System.out.println("identifiant isn't rootAdmin");
-            throw new Exception("identifiant incorrect ");
-        }
 
 
-
+            this.passwordSet = new PasswordAuthentication(identifiant,password);
 
 
     }
@@ -37,38 +26,38 @@ public abstract class Account {
 
 
 
-    public boolean checkPassword(char[] checkedPassword){
+    public boolean checkPasswordEquality(char[] checkedPassword){
         return Arrays.equals(passwordSet.getPassword(), checkedPassword);
     }
 
 
-    public static boolean isIdentifiantFormatOk(String id)  {
+    public static void checkIdentifiantFormat(String id) throws UserDataInputException {
         System.out.println("name checked : " + id);
         if (id.matches("[a-z0-9*\\-\\._]{1,30}@[a-z]{1,30}\\.[a-z]{2,20}")){
-            return true;
+            System.out.println("format de l'identifiant ok");
         }
-        else return false;
+        else throw new UserDataInputException("format de l'identifiant incorrect\n");
     }
 
 
-    public static boolean isPasswordFormatOk(char[] password){
+    public static void checkPasswordFormat(char[] password) throws UserDataInputException {
         if (password.length < 6 || password.length > 20)
         for(char c : password) {
             if (!(Character.toString(c).matches("[0-9a-zA-Z]") ) ) {
                 System.out.println("format incorrect");
-                return false;
+                throw new UserDataInputException("format du mot de passe incorrect\nformat requis : chiffres et lettres, 6 à 20 caractères");
             }
         }
 
-        System.out.println("mot de passe valide");
-        return true;
+        System.out.println("format du mot de passe valide");
+
 
     }
 
 
     public abstract boolean modify(Account newAccount) throws Exception;
 
-    public abstract boolean ajouter() throws Exception;
+    public abstract boolean ajouter() throws FileException;
 
 
     public abstract boolean remove() throws Exception ;

@@ -19,7 +19,7 @@ public class FileEncryption {
 
     private SecretKeySpec keySpec;
 
-    public FileEncryption(char[] _password, byte[] _salt, int _iterations, int _keyLength) throws Exception {
+    public FileEncryption(char[] _password, byte[] _salt, int _iterations, int _keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         keySpec = createSecretKey(_password,_salt,_iterations,_keyLength);
 

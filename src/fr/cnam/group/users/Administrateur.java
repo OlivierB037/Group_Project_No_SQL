@@ -1,11 +1,11 @@
 package fr.cnam.group.users;
 
 import fr.cnam.group.DataHandler;
+import fr.cnam.group.exceptions.FileException;
 import fr.cnam.group.files.Comptes;
 import fr.cnam.group.files.FilesHandler;
 
 
-import java.io.File;
 import java.io.IOException;
 
 import static fr.cnam.group.DataHandler.*;
@@ -16,8 +16,8 @@ public class Administrateur extends Account {
     }
 
     @Override
-    public boolean checkPassword(char[] checkedPassword) {
-        return super.checkPassword(checkedPassword);
+    public boolean checkPasswordEquality(char[] checkedPassword) {
+        return super.checkPasswordEquality(checkedPassword);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class Administrateur extends Account {
     }
 
     @Override
-    public boolean ajouter() throws Exception {
+    public boolean ajouter() throws FileException {
         try {
             if (listeAdmins.putIfAbsent(getIdentifiant(), this) == null){
                 System.out.println("admin créé");
@@ -117,15 +117,15 @@ public class Administrateur extends Account {
             }
             else{
                 System.out.println("error while putting to HashMap");
-                throw new Exception("erreur lors de l'ajout au système");
+                throw new FileException("erreur lors de l'ajout au système");
 
             }
 
-        }catch (IOException e) {
+        }catch (Exception e) {
             System.err.println(e.getMessage());
             System.out.println("removing from HashMap");
             listeAdmins.remove(getIdentifiant());
-            throw new Exception("erreur lors de l'inscription dans le fichier");
+            throw new FileException("erreur lors de l'inscription dans le fichier");
 
         }
     }

@@ -1,3 +1,15 @@
+/*
+ * Nom de classe : DataHandler
+ *
+ * Description   : gère les données utilisateurs dans l'application
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group;
 
 import fr.cnam.group.files.Annuaire;
@@ -41,14 +53,22 @@ public class DataHandler {
 
 
 
-    static boolean loadReady;
+
 
 
     public static boolean isIdentifiantavailable(String identifiant){
         AtomicBoolean available = new AtomicBoolean(true);
         listeAdmins.forEach((id, admin) ->{
+            System.out.printf("isidentifiantAvailable() : testing %s vs %s\n",id,identifiant);
             if(identifiant.equals(id)){
-                System.out.println("l'identifiant " + identifiant + " est déja utilisé");
+                System.out.println("l'identifiant " + identifiant + " est déja utilisé (admin)");
+                available.set(false);
+            }
+        });
+        annuaire.forEach((id, admin) ->{
+            System.out.printf("isidentifiantAvailable() : testing %s vs %s\n",id,identifiant);
+            if(identifiant.equals(id)){
+                System.out.println("l'identifiant " + identifiant + " est déja utilisé (particulier");
                 available.set(false);
             }
         });
@@ -181,7 +201,7 @@ public class DataHandler {
                             }
                             str = fileEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
                             System.out.println("password of "+ readData[0]+  " is "+ str);
-                            addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4], Particulier.TypeParticulier.valueOf(readData[5]),readData[0],str.toCharArray()));
+                            addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4],readData[5], Particulier.TypeParticulier.valueOf(readData[6]),readData[0],str.toCharArray()));
                         }
                         else if (addedClass == Administrateur.class){
                             if (readData[0].equals("#")) {
@@ -213,12 +233,10 @@ public class DataHandler {
 
     public static void main(String[] args) throws Exception {
 
-
-
+        //System.out.println("test 3 parts - 1 rue de la paix,09240,la-bastide de Serou : " + Particulier.isAdresseFormatOk("1 rue de la paix", "09240", "la bastide de Serou"));
+        //System.out.println("test 1 rue de la paix,09240,la bastide de Serou : " + Particulier.isAdresseFormatOk("1 rue de la paix, 09240, la bastide de Serou"));
 
         LoadingDialog loadingDialog = new LoadingDialog();
-
-
 
         new Thread(() -> { // affichage d'une boite de dialogue le temps du chargement des données
             loadingDialog.pack();
@@ -229,7 +247,7 @@ public class DataHandler {
         System.out.println("loading particuliers");
         loadData(new Annuaire(), Particulier.class);
 
-        Thread.sleep(10000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
+        Thread.sleep(2000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
 
         loadingDialog.dispose();
 

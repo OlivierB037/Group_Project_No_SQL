@@ -40,6 +40,12 @@ public class MenuModifier implements PlaceHolder {
     private JButton changePasswordButton;
     private JComboBox typeParticulierBox;
     private JLabel typeParticulierLabel;
+    private JTextField streetTextField;
+    private JLabel streetLabel;
+    private JTextField codePostalField;
+    private JLabel codePostalLabel;
+    private JTextField villeField;
+    private JLabel villeLabel;
 
     public static final int RESULT_TABLE_EVENT_ID = -372;
     public static final int RETURN_TO_MAIN_EVENT_ID = 370;
@@ -227,9 +233,9 @@ public class MenuModifier implements PlaceHolder {
                             }
                             else {
 
-                                if (!(dateNaissanceField.getText().isEmpty()) && !(Particulier.isDateFormatOk(dateNaissanceField.getText()))) {
+                                if (!(dateNaissanceField.getText().isEmpty())){
+                                    Particulier.checkDateFormat(dateNaissanceField.getText());
 
-                                    throw new Exception("le format de la date doit être MM/DD/YYYY");
                                 }
                                 if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
                                     searchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), false);
@@ -250,7 +256,7 @@ public class MenuModifier implements PlaceHolder {
                             }
 
                             tacheStep = Step.Select;
-                            searchTypeButton.setEnabled(false);
+                            searchTypeButton.setVisible(false);
                             validerButton.setEnabled(false);
                             stepField.setText("selectionnez un des résultat");
 
@@ -279,6 +285,7 @@ public class MenuModifier implements PlaceHolder {
                             resultsTable.setVisible(false);
                             setPasswordFields(true);
                             setSearchFields(true);
+                            setAddressFields(true);
                             if (row != -1) {
 
                                 System.out.println("selection is number "+ row);
@@ -314,6 +321,9 @@ public class MenuModifier implements PlaceHolder {
                             String nouveauNom = Particulier.formatNames(nomUserField.getText());
                             String nouveauPrenom = Particulier.formatNames(prenomUserField.getText());
                             String nouvelleDateNaissance = dateNaissanceField.getText();
+                            String nouvelleRue = streetTextField.getText();
+                            String nouveauPostalCode = codePostalField.getText();
+                            String nouvelleVille = villeField.getText();
                             char[] finalPassword;
 
 
@@ -321,33 +331,34 @@ public class MenuModifier implements PlaceHolder {
                                 throw new Exception("vous devez selectionner un type de compte");
                             }
 
-                            if (Account.isIdentifiantFormatOk(nouvelIdentifiant)) {
+                                Particulier.checkIdentifiantFormat(nouvelIdentifiant);
                                 if (!(particulier.getIdentifiant().equals(nouvelIdentifiant))) {
                                     if (!(DataHandler.isIdentifiantavailable(nouvelIdentifiant))) {
                                         throw new Exception("l'identifiant nest pas disponible");
                                     }
                                 }
-                                if (particulier.checkPassword(currentPasswordField.getPassword())) {
+                                if (particulier.checkPasswordEquality(currentPasswordField.getPassword())) {
                                     if (newPasswordField.isVisible() && newPasswordField.getPassword().length !=0 && newPasswordConfirmField.getPassword().length != 0 ) {
-                                        if (Account.isPasswordFormatOk(newPasswordField.getPassword()) && Account.isPasswordFormatOk(newPasswordConfirmField.getPassword())) {
-                                            if (confirmPassword(newPasswordField.getPassword(), newPasswordConfirmField.getPassword())) {
-                                                finalPassword = newPasswordField.getPassword();
-                                            }
-                                            else{
-                                                throw new Exception("nouveau mot de passe non confirmé");
-                                            }
-                                        }else {
-                                            throw  new Exception("format du nouveau mot de passe incorrect");
+
+
+                                        if (confirmPassword(newPasswordField.getPassword(), newPasswordConfirmField.getPassword())) {
+                                            Particulier.checkPasswordFormat(newPasswordField.getPassword());
+                                            finalPassword = newPasswordField.getPassword();
                                         }
-
-
+                                        else{
+                                            throw new Exception("nouveau mot de passe non confirmé");
+                                        }
                                     }
                                     else {
                                         finalPassword = currentPasswordField.getPassword();
                                     }
 
-                                    if (Particulier.isNameFormatOk(nouveauNom) && Particulier.isNameFormatOk(nouveauPrenom) && Particulier.isDateFormatOk(nouvelleDateNaissance)) {
-                                        if (particulier.modify(new Particulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(), Particulier.generateDateModification(), Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()), identifiantField.getText(), finalPassword))) {
+                                        Particulier.checkNameFormat(nouveauNom);
+                                        Particulier.checkNameFormat(nouveauPrenom);
+                                        Particulier.checkDateFormat(nouvelleDateNaissance);
+                                        Particulier.checkAdresseFormat(nouvelleRue,nouveauPostalCode,nouvelleVille);
+                                        String adresse = Particulier.formatAdresse(nouvelleRue,nouveauPostalCode,nouvelleVille);
+                                        if (particulier.modify(new Particulier(nouveauNom, nouveauPrenom, nouvelleDateNaissance,adresse, Particulier.generateDateModification(), Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()), nouvelIdentifiant, finalPassword))) {
                                             supprimerButton.setEnabled(false);
                                             clearTextFields();
                                             int response;
@@ -370,14 +381,12 @@ public class MenuModifier implements PlaceHolder {
                                         } else {
                                             throw new Exception("erreur lors de la modification");
                                         }
-                                    } else {
-                                        throw new Exception("saisie incorrecte");
-                                    }
+
                                 }
                                 else{
                                     throw new Exception("mot de passe incorrect, pour effectuer les modifications vous devez saisir votre mot de passe actuel");
                                 }
-                            }
+
                         }
                     } else {
 
@@ -390,7 +399,7 @@ public class MenuModifier implements PlaceHolder {
                             resultsTable.setVisible(true);
                             modifierPane.updateUI();
 
-                            searchTypeButton.setEnabled(false);
+                            searchTypeButton.setVisible(false);
                             tacheStep = Step.Select;
                             validerButton.setEnabled(false);
                             stepField.setText("selectionnez un des résultat");
@@ -434,23 +443,23 @@ public class MenuModifier implements PlaceHolder {
                             String nouvelIdentifiant = identifiantField.getText();
                             char[] finalPassword;
                             if (!(administrateur.getIdentifiant().equals(nouvelIdentifiant))) {
+                                Administrateur.checkIdentifiantFormat(nouvelIdentifiant);
                                 if (!(DataHandler.isIdentifiantavailable(nouvelIdentifiant))) {
                                     throw new Exception("l'identifiant nest pas disponible");
                                 }
                             }
 
-                            if (administrateur.checkPassword(currentPasswordField.getPassword())) {
+                            if (administrateur.checkPasswordEquality(currentPasswordField.getPassword())) {
                                 if (newPasswordField.isVisible() && newPasswordField.getPassword().length !=0 && newPasswordConfirmField.getPassword().length != 0 ) {
-                                    if (Account.isPasswordFormatOk(newPasswordField.getPassword()) && Account.isPasswordFormatOk(newPasswordConfirmField.getPassword())) {
+                                    Account.checkPasswordFormat(newPasswordField.getPassword());
+                                    Account.checkPasswordFormat(newPasswordConfirmField.getPassword());
                                         if (confirmPassword(newPasswordField.getPassword(), newPasswordConfirmField.getPassword())) {
                                             finalPassword = newPasswordField.getPassword();
                                         }
                                         else{
                                             throw new Exception("nouveau mot de passe non confirmé");
                                         }
-                                    }else {
-                                        throw  new Exception("format du nouveau mot de passe incorrect");
-                                    }
+
 
 
                                 }
@@ -497,11 +506,19 @@ public class MenuModifier implements PlaceHolder {
         dropPlaceHolder(prenomUserField);
         dropPlaceHolder(nomUserField);
         dropPlaceHolder(dateNaissanceField);
+        dropPlaceHolder(streetTextField);
+        dropPlaceHolder(codePostalField);
+        dropPlaceHolder(villeField);
         typeParticulierBox.setSelectedItem(particulier.getTypeParticulier().toString());
         identifiantField.setText(particulier.getIdentifiant());
         nomUserField.setText(particulier.getNom());
         prenomUserField.setText(particulier.getPrenom());
         dateNaissanceField.setText(particulier.getDate_naissance());
+        streetTextField.setText(particulier.getAdresse().split(",")[0]);
+        String postal = particulier.getAdresse().split(",")[1].substring(1,6);
+        System.out.println("postal code length : " + postal.length());
+        codePostalField.setText(postal);
+        villeField.setText(particulier.getAdresse().split(",")[1].substring(7));
 
     }
 
@@ -551,6 +568,12 @@ public class MenuModifier implements PlaceHolder {
         prenomUserLabel.setVisible(b);
         dateNaissanceField.setVisible(b);
         dateLabel.setVisible(b);
+        streetTextField.setVisible(b);
+        streetLabel.setVisible(b);
+        codePostalField.setVisible(b);
+        codePostalLabel.setVisible(b);
+        villeField.setVisible(b);
+        villeLabel.setVisible(b);
         typeParticulierBox.setVisible(b);
         typeParticulierLabel.setVisible(b);
 
@@ -573,6 +596,14 @@ public class MenuModifier implements PlaceHolder {
         changePasswordButton.setVisible(b);
 
     }
+    public void setAddressFields(boolean b){
+        streetTextField.setVisible(b);
+        streetLabel.setVisible(b);
+        codePostalField.setVisible(b);
+        codePostalLabel.setVisible(b);
+        villeField.setVisible(b);
+        villeLabel.setVisible(b);
+    }
 
 
 
@@ -580,6 +611,12 @@ public class MenuModifier implements PlaceHolder {
     public void showNameFields(){
         setPasswordFields(false);
         setSearchFields(false);
+        streetTextField.setVisible(false);
+        streetLabel.setVisible(false);
+        codePostalField.setVisible(false);
+        codePostalLabel.setVisible(false);
+        villeField.setVisible(false);
+        villeLabel.setVisible(false);
         nomUserField.setVisible(true);
         nomUserLabel.setVisible(true);
         prenomUserField.setVisible(true);
@@ -595,35 +632,36 @@ public class MenuModifier implements PlaceHolder {
 
                     int modifyAnother;
                     int response;
-                    if(account instanceof Particulier){
+                    if (!(account.checkPasswordEquality(currentPasswordField.getPassword()))) {
 
-                        Particulier particulier = (Particulier) account;
-                        if (userType == Type.Administrateur) {
-                            response = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous supprimer " + particulier.getPrenom() + " " +
-                                    particulier.getNom() + " ?", "confirmer suppression", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        }
-                        else{
-                            response = JOptionPane.showConfirmDialog(modifierPane, "Cette action est irréversible. \nVoulez vous vraiment supprimer  votre compte ?","suppression du compte", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        }
+                        if (account instanceof Particulier) {
 
-                        if (response == JOptionPane.YES_OPTION) {
-                            if (particulier.remove()) {
-                                JOptionPane.showMessageDialog(modifierPane, "Compte supprimé", "succès", JOptionPane.INFORMATION_MESSAGE);
+                            Particulier particulier = (Particulier) account;
+                            if (userType == Type.Administrateur) {
+                                response = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous supprimer " + particulier.getPrenom() + " " +
+                                        particulier.getNom() + " ?", "confirmer suppression", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                             } else {
-                                throw new Exception("echec de la suppression");
+                                response = JOptionPane.showConfirmDialog(modifierPane, "Cette action est irréversible. \nVoulez vous vraiment supprimer  votre compte ?", "suppression du compte", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                             }
 
-                        }
-                        clearTextFields();
-                        if (userType == Type.Administrateur) {
-                            modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre particulier", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        } else {
-                            modifyAnother = JOptionPane.NO_OPTION;
-                            menuPrincipal.actionPerformed(new ActionEvent(modifierPane,DISCONNECT_EVENT_ID,DISCONNECT_EVENT_COMMAND));
-                        }
+                            if (response == JOptionPane.YES_OPTION) {
+                                if (particulier.remove()) {
+                                    JOptionPane.showMessageDialog(modifierPane, "Compte supprimé", "succès", JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+                                    throw new Exception("echec de la suppression");
+                                }
 
-                    }  else {
-                        if (account.checkPassword(currentPasswordField.getPassword())) {
+                            }
+                            clearTextFields();
+                            if (userType == Type.Administrateur) {
+                                modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre particulier", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            } else {
+                                modifyAnother = JOptionPane.NO_OPTION;
+                                menuPrincipal.actionPerformed(new ActionEvent(modifierPane, DISCONNECT_EVENT_ID, DISCONNECT_EVENT_COMMAND));
+                            }
+
+                        } else {
+
                             response = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous supprimer " +
                                     account.getIdentifiant(), "confirmer suppression", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                             if (response == JOptionPane.YES_OPTION) {
@@ -634,31 +672,35 @@ public class MenuModifier implements PlaceHolder {
                                 }
 
                             }
-                        } else {
-                            throw new Exception("l'ancien mot de passe est incorrect");
+
+                            clearTextFields();
+                            modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre administrateur", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                         }
-                        clearTextFields();
-                        modifyAnother = JOptionPane.showConfirmDialog(modifierPane, "Voulez vous modifier un autre administrateur", "recommencer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        if (modifyAnother == JOptionPane.YES_OPTION) {
+
+                            tacheStep = Step.Search;
+
+                            validerButton.setText("chercher");
+                            supprimerButton.setEnabled(false);
+                            identifiantField.setEditable(true);
+                            modifiedTypeBox.setEnabled(true);
+                            clearTextFields();
+                            setPlaceHolders();
+                            tacheStep = Step.Search;
+
+                            modifierPane.updateUI();
+                        } else {
+                            menuPrincipal.actionPerformed(new ActionEvent(modifierPane, 370, "returnToMainFromModifier"));
+
+                        }
                     }
-                    if (modifyAnother == JOptionPane.YES_OPTION) {
-
-                        tacheStep = Step.Search;
-
-                        validerButton.setText("chercher");
-                        supprimerButton.setEnabled(false);
-                        identifiantField.setEditable(true);
-                        modifiedTypeBox.setEnabled(true);
-                        clearTextFields();
-                        setPlaceHolders();
-                        tacheStep = Step.Search;
-
-                        modifierPane.updateUI();
-                    } else {
-                        menuPrincipal.actionPerformed(new ActionEvent(modifierPane, 370, "returnToMainFromModifier"));
-
+                    else {
+                        throw new SecurityException("l'ancien mot de passe est incorrect");
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     JOptionPane.showMessageDialog(modifierPane, ex.getMessage(), "erreur", JOptionPane.ERROR_MESSAGE);
+
                 }
                 validerButton.setEnabled(true);
             }
@@ -671,8 +713,8 @@ public class MenuModifier implements PlaceHolder {
         changePasswordButton.setVisible(true);
         currentPasswordField.setVisible(true);
         validerButton.setEnabled(true);
-        selectAllBox.setEnabled(false);
-        modifiedTypeBox.setEnabled(false);
+        selectAllBox.setVisible(false);
+        modifiedTypeBox.setVisible(false);
         tacheStep = Step.change;
         supprimerButton.setEnabled(true);
         stepField.setText("entrer les valeurs à modifier");
@@ -730,6 +772,9 @@ public class MenuModifier implements PlaceHolder {
         newPasswordField.setText("");
         newPasswordConfirmField.setText("");
         currentPasswordField.setText("");
+        streetTextField.setText("");
+        codePostalField.setText("");
+        villeField.setText("");
     }
 
     public void setPlaceHolders(){

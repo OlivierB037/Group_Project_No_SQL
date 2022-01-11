@@ -30,6 +30,12 @@ public class MenuAjouter implements PlaceHolder {
     private JLabel passwordConfirmLabel;
     private JComboBox typeParticulierBox;
     private JLabel typeParticulierLabel;
+    private JTextField streetTextField;
+    private JLabel streetLabel;
+    private JTextField codePostalField;
+    private JLabel codePostalLabel;
+    private JTextField villeField;
+    private JLabel villeLabel;
 
     private enum Type {Particulier, Administrateur}
     private Type type;
@@ -61,6 +67,9 @@ public class MenuAjouter implements PlaceHolder {
                 String nom = nomUserField.getText();
                 String prenom = prenomUserField.getText();
                 String date = dateNaissanceField.getText();
+                String rue = streetTextField.getText();
+                String postalCode = codePostalField.getText();
+                String ville = villeField.getText();
                 char[] password = passwordField.getPassword();
                 char[] passwordConfirm = passwordConfirmField.getPassword();
                 if (!Arrays.equals(password, passwordConfirm)) {
@@ -70,8 +79,12 @@ public class MenuAjouter implements PlaceHolder {
                 }
                 else{
                     if (DataHandler.isIdentifiantavailable(identifiant)) {
+                        System.out.println("identifiant " + identifiant+ " is available");
 
                         if (type == Type.Administrateur) {
+                            Administrateur.checkIdentifiantFormat(identifiant);
+                            Administrateur.checkPasswordFormat(password);
+
                             if (new Administrateur(identifiant, password).ajouter()) {
                                 clearFields();
                                 JOptionPane.showMessageDialog(menuAjouterPanel, "Administrateur ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
@@ -90,7 +103,14 @@ public class MenuAjouter implements PlaceHolder {
                                 throw new Exception("veuillez sélectionner un type de Particulier");
                             }
                             else {
-                                if (new Particulier(nom, prenom, date, Particulier.generateDateModification(),typeParticulier, identifiant, password).ajouter()) {
+                                Particulier.checkIdentifiantFormat(identifiant);
+                                Particulier.checkNameFormat(nom);
+                                Particulier.checkNameFormat(prenom);
+                                Particulier.checkDateFormat(date);
+                                Particulier.checkPasswordFormat(password);
+                                Particulier.checkAdresseFormat(rue,postalCode,ville);
+
+                                if (new Particulier(nom, prenom, date,Particulier.formatAdresse(rue,postalCode,ville), Particulier.generateDateModification(),typeParticulier, identifiant, password).ajouter()) {
                                     clearFields();
                                     JOptionPane.showMessageDialog(menuAjouterPanel, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                                 }
@@ -114,6 +134,9 @@ public class MenuAjouter implements PlaceHolder {
         setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
         setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
         setPlaceHolder(passwordField,PASSWORD_PLACEHOLDER);
+        setPlaceHolder(streetTextField, STREET_PLACEHOLDER);
+        setPlaceHolder(codePostalField,POSTAL_CODE_PLACEHOLDER);
+        setPlaceHolder(villeField,CITY_PLACEHOLDER);
     }
 
 
@@ -135,6 +158,12 @@ public class MenuAjouter implements PlaceHolder {
         prenomUserLabel.setVisible(false);
         dateNaissanceField.setVisible(false);
         dateLabel.setVisible(false);
+        streetTextField.setVisible(false);
+        streetLabel.setVisible(false);
+        codePostalField.setVisible(false);
+        codePostalLabel.setVisible(false);
+        villeField.setVisible(false);
+        villeLabel.setVisible(false);
 
 
 
@@ -151,6 +180,12 @@ public class MenuAjouter implements PlaceHolder {
         prenomUserLabel.setVisible(true);
         dateNaissanceField.setVisible(true);
         dateLabel.setVisible(true);
+        streetTextField.setVisible(true);
+        streetLabel.setVisible(true);
+        codePostalField.setVisible(true);
+        codePostalLabel.setVisible(true);
+        villeField.setVisible(true);
+        villeLabel.setVisible(true);
         typeParticulierBox.setVisible(true);
         typeParticulierLabel.setVisible(true);
         identifiantField.setVisible(true);
@@ -167,6 +202,9 @@ public class MenuAjouter implements PlaceHolder {
         dateNaissanceField.setText("");
         passwordConfirmField.setText("");
         passwordField.setText("");
+        streetTextField.setText("");
+        codePostalField.setText("");
+        villeField.setText("");
     }
 
 
