@@ -1,3 +1,17 @@
+/*
+ * Nom de classe : PlaceHolder
+ *
+ * Description   : interface permettant d'afficher des indices dans les zones de saisie de texte (JTextField)
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group.gui;
 
 import javax.swing.*;
@@ -17,13 +31,15 @@ public interface PlaceHolder {
     String CITY_PLACEHOLDER = "ex: Toulouse";
 
     default void setPlaceHolder(JTextField textField, String text){
-        System.out.println("setPlaceHolder called");
+//        System.out.println("setPlaceHolder called");
         if (textField instanceof JPasswordField){
             ((JPasswordField) textField).setEchoChar((char) 0);
         }
         textField.setText(text);
         textField.setForeground(Color.GRAY);
         textField.addFocusListener(new FocusAdapter() {
+
+            // supprime le placeHolder lorsque l'utilisateur clique sur le TextField
             @Override
             public void focusGained(FocusEvent e) {
                 super.focusGained(e);
@@ -33,43 +49,26 @@ public interface PlaceHolder {
                     }
                     textField.setForeground(Color.DARK_GRAY);
                     textField.setText("");
-
                 }
-
             }
 
+            //ré-installe le placeHolder lorsque l'utilisateur clique ailleurs
             @Override
             public void focusLost(FocusEvent e) {
                 super.focusLost(e);
-
-
-
                 if (textField.getText().isEmpty()){
                     if (textField instanceof JPasswordField){
                         ((JPasswordField) textField).setEchoChar((char) 0);
-
                     }
                     textField.setText(text);
                     textField.setForeground(Color.GRAY);
                 }
-
-
             }
         });
-//        textField.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                super.mouseClicked(e);
-//                if (textField instanceof JPasswordField){
-//                    ((JPasswordField) textField).setEchoChar('*');
-//                }
-//                textField.setForeground(Color.DARK_GRAY);
-//                textField.setText("");
-//            }
-//        });
     }
-
+    //retire le placeHolder
     default void dropPlaceHolder(JTextField textField){
+        textField.setForeground(Color.DARK_GRAY);
         textField.setText("");
     }
 }

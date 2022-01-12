@@ -1,7 +1,9 @@
 /*
  * Nom de classe : DataHandler
  *
- * Description   : gère les données utilisateurs dans l'application
+ * Description   : gère les données utilisateurs dans l'application et leur chargement au démarrage
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
  *
  * Version       : 1.0
  *
@@ -12,9 +14,10 @@
 
 package fr.cnam.group;
 
+import fr.cnam.group.exceptions.DataException;
 import fr.cnam.group.files.Annuaire;
 import fr.cnam.group.files.Comptes;
-import fr.cnam.group.files.FileEncryption;
+import fr.cnam.group.files.PasswordEncryption;
 import fr.cnam.group.files.FilesHandler;
 import fr.cnam.group.gui.dialogs.LoadingDialog;
 import fr.cnam.group.gui.menus.MenuPrincipal;
@@ -22,21 +25,15 @@ import fr.cnam.group.gui.MyWindow;
 import fr.cnam.group.users.Account;
 import fr.cnam.group.users.Administrateur;
 import fr.cnam.group.users.Particulier;
-
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.io.*;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
-
-
 public class DataHandler {
-
-
-
 
     public static HashMap<String, Particulier> annuaire = new HashMap<>();
     public static HashMap<String, Administrateur> listeAdmins = new HashMap<>();
@@ -46,27 +43,19 @@ public class DataHandler {
     public static final char DATA_SEPARATOR = ';';
     public static final String ROOT_ADMIN_ID = "rootAdmin";
 
-
-
-
     public static Account currentUser = null; // utilisateur connecté
-
-
-
-
-
 
     public static boolean isIdentifiantavailable(String identifiant){
         AtomicBoolean available = new AtomicBoolean(true);
         listeAdmins.forEach((id, admin) ->{
-            System.out.printf("isidentifiantAvailable() : testing %s vs %s\n",id,identifiant);
+//            System.out.printf("isidentifiantAvailable() : testing %s vs %s\n",id,identifiant);
             if(identifiant.equals(id)){
                 System.out.println("l'identifiant " + identifiant + " est déja utilisé (admin)");
                 available.set(false);
             }
         });
         annuaire.forEach((id, admin) ->{
-            System.out.printf("isidentifiantAvailable() : testing %s vs %s\n",id,identifiant);
+//            System.out.printf("isidentifiantAvailable() : testing %s vs %s\n",id,identifiant);
             if(identifiant.equals(id)){
                 System.out.println("l'identifiant " + identifiant + " est déja utilisé (particulier");
                 available.set(false);
@@ -79,44 +68,34 @@ public class DataHandler {
 
 
 
-    public static boolean addAdminToDatabase(Administrateur admin) throws Exception { //enregistre l'admninistrateur dans le HashMap listeAdmins
+     private boolean addAdminToDatabase(Administrateur admin) throws DataException { //enregistre l'administrateur dans le HashMap listeAdmins
 
         if(listeAdmins.putIfAbsent(admin.getIdentifiant(),admin) == null){
-            System.out.println("admin ajouté au système");
+//            System.out.println("admin ajouté au système");
             return true;
         }
         else{
-            throw new Exception("erreur lors de l'ajout au système");
+            throw new DataException("erreur lors de l'ajout au système");
         }
     }
 
-    public static boolean addParticulierToDatabase(Particulier particulier) throws Exception { // enregistre le Particulier dans le HashMap annuaire
+    private boolean addParticulierToDatabase(Particulier particulier) throws DataException { // enregistre le Particulier dans le HashMap annuaire
 
         if (annuaire.putIfAbsent(particulier.getIdentifiant(),particulier) == null) {
-            System.out.println("particulier ajouté au système");
+//            System.out.println("particulier ajouté au système");
             return true;
 
         } else {
-            throw new Exception("erreur lors de l'ajout dans l'annuaire");
+            throw new DataException("erreur lors de l'ajout dans l'annuaire");
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-    public static void loadData(File file, Class<? extends Account> addedClass ) { //lire les fichiers de sauvegarde et générer les données
+    private void loadData(File file, Class<? extends Account> addedClass ) { //lire les fichiers de sauvegarde et générer les données
 
         ArrayList<String> dataGroups = new ArrayList<>();
         Scanner scanner = null;
         try {
-            FileEncryption fileEncryption = new FileEncryption(FilesHandler.encryptionKey,FilesHandler.encryptionSalt,FilesHandler.encryptionIterations,FilesHandler.encryptionKeyLength);// classe générant le cryptage
+            PasswordEncryption passwordEncryption = new PasswordEncryption(FilesHandler.encryptionKey,FilesHandler.encryptionSalt,FilesHandler.encryptionIterations,FilesHandler.encryptionKeyLength);// classe générant le cryptage
             if ((file.exists() ) ){ // vérification de la présence du fichier
                 if (file instanceof Comptes) {
                     System.out.println("rootAdmin verification : admin file is present");
@@ -127,7 +106,7 @@ public class DataHandler {
                     else{
                         System.out.println("rootAdmin verification : Root admin not in file, creating root administrator");
 
-                        String password = fileEncryption.encrypt("rootPassword");
+                        String password = passwordEncryption.encrypt("rootPassword");
                         //System.out.println("encrypted password : " + password);
                         new FileWriter(file,true) {
                             {
@@ -145,7 +124,7 @@ public class DataHandler {
                     if(file instanceof Comptes){
                         System.out.println("rootAdmin verification : creating root administrator");
 
-                        String password = fileEncryption.encrypt("rootPassword");
+                        String password = passwordEncryption.encrypt("rootPassword");
 
                         new FileWriter(file) {
                             {
@@ -157,32 +136,23 @@ public class DataHandler {
                     }
                 }
             }
-
-
             scanner  = new Scanner(file);
             int i = 0;
             while (scanner.hasNext()) {
                 dataGroups.add(i, scanner.nextLine()); // lit chaque ligne du fichier
 //                System.out.println("reading users in file : data group " + i + " : " + dataGroups.get(i));
                 i++;
-
             }
-
-
-
-
             for (String s : dataGroups) { //parcourt chaque ligne extraite du fichier
-
                 if (s != null) {
                     String[] readData = null;
                     //System.out.println("reading users datas : data : " + s);
                     readData = s.split(String.valueOf(DATA_SEPARATOR)); // sépare chaque donnée utilisateur contenue dans les lignes du fichier
                     //System.out.println("size of readData: " + readData.length);
                     for (String str : readData) { // boucle servant uniquement a afficher l'utilisateur actuellement lu et ajouté dans le HashMap
-
-                        if (str != null) {
-                            System.out.println("reading users data : " + str);
-                        }
+//                        if (str != null) {
+//                            System.out.println("reading users data : " + str);
+//                        }
                     }
                     //System.out.println("ajout des données utilisateur");
                     try {
@@ -199,28 +169,27 @@ public class DataHandler {
                                     break;
                                 }
                             }
-                            str = fileEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
-                            System.out.println("password of "+ readData[0]+  " is "+ str);
+                            str = passwordEncryption.decrypt(str.split(String.valueOf(DATA_SEPARATOR))[1]);
+//                            System.out.println("password of "+ readData[0]+  " is "+ str);
                             addParticulierToDatabase(new Particulier(readData[1], readData[2], readData[3],readData[4],readData[5], Particulier.TypeParticulier.valueOf(readData[6]),readData[0],str.toCharArray()));
                         }
                         else if (addedClass == Administrateur.class){
                             if (readData[0].equals("#")) {
-                                System.out.println("loadData : admin : adding " + readData[1]);
-                                addAdminToDatabase(new Administrateur(readData[1], fileEncryption.decrypt(readData[2]).toCharArray()));
-                                System.out.println("decrypted password : " + fileEncryption.decrypt(readData[2]));
+//                                System.out.println("loadData : admin : adding " + readData[1]);
+                                addAdminToDatabase(new Administrateur(readData[1], passwordEncryption.decrypt(readData[2]).toCharArray()));
+//                                System.out.println("decrypted password : " + passwordEncryption.decrypt(readData[2]));
                             }
                         }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (FileNotFoundException e) {
+                        JOptionPane.showMessageDialog(null,"fichier Accounts.txt introuvable. Veuillez redémarrer l'application.","fichier introuvable",JOptionPane.ERROR_MESSAGE);
+                        System.exit(0);
                     }
                 }
-
             }
-        } catch (IOException e) {
+        } catch (IOException | DataException | GeneralSecurityException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,"erreur lors du chargement des données\n"+e.getMessage(),"fichier introuvable",JOptionPane.ERROR_MESSAGE);
+
         } finally {
             scanner.close();
         }
@@ -231,11 +200,7 @@ public class DataHandler {
 
 
 
-    public static void main(String[] args) throws Exception {
-
-        //System.out.println("test 3 parts - 1 rue de la paix,09240,la-bastide de Serou : " + Particulier.isAdresseFormatOk("1 rue de la paix", "09240", "la bastide de Serou"));
-        //System.out.println("test 1 rue de la paix,09240,la bastide de Serou : " + Particulier.isAdresseFormatOk("1 rue de la paix, 09240, la bastide de Serou"));
-
+    public static void main(String[] args)  {
         LoadingDialog loadingDialog = new LoadingDialog();
 
         new Thread(() -> { // affichage d'une boite de dialogue le temps du chargement des données
@@ -243,46 +208,43 @@ public class DataHandler {
             loadingDialog.setVisible(true);
         }).start();
         System.out.println("loading Admins");
-        loadData(new Comptes(), Administrateur.class);
+        DataHandler dataHandler = new DataHandler();
+        dataHandler.loadData(new Comptes(), Administrateur.class);
         System.out.println("loading particuliers");
-        loadData(new Annuaire(), Particulier.class);
+        dataHandler.loadData(new Annuaire(), Particulier.class);
 
-        Thread.sleep(2000); // fichier de l'annuaire trop petit pour avoir un réel temps de chargement
+        try {
+            Thread.sleep(5000); // simule un  délai de démarrage car le fichier de l'annuaire trop petit pour avoir un réel temps de chargement
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         loadingDialog.dispose();
 
-        listeAdmins.forEach((id, admin)->{
-            System.out.println("admin : " + id);
-        });
+//        listeAdmins.forEach((id, admin)->{
+//            System.out.println("admin : " + id);
+//        });
         try {
             UIManager.setLookAndFeel(new NimbusLookAndFeel()); // application du "skin" Nimbus à l'interface graphique
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
 
-        MyWindow myWindow = new MyWindow(); // classe héritant de JFrame, la fenêtre de l'UI, qui contient tous les éléments graphiques affichés
-
+        MyWindow myWindow = null; // classe héritant de JFrame, la fenêtre de l'UI, qui contient tous les éléments graphiques affichés
+        try {
+            myWindow = new MyWindow();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         MenuPrincipal menuPrincipal = new MenuPrincipal(myWindow);
         menuPrincipal.init(); //initialisation du menu principal
 
+        /*ouverture du menu principal*/
         myWindow.setVisible(true);
         myWindow.pack();
-        /*ouverture du menu principal*/
-
 
         myWindow.setContentPane(menuPrincipal.getMenuPrincipalPanel()); // aplication du menu principal dans la fenêtre
         myWindow.setMinimumSize(new Dimension(600,600));
-
-
-
-
-
-
-
-
     }
-
-
-
 }

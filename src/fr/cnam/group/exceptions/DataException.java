@@ -1,7 +1,7 @@
 /*
- * Nom de classe : UserDataInputException
+ * Nom de classe : DataException
  *
- * Description   : exception levée par une saisie incorrecte de données utilisateur.
+ * Description   : exception levée lors d'une erreur lors de l'écriture/lecture des données de l'application
  *
  * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
  *
@@ -11,11 +11,10 @@
  *
  * Copyright     : CC-BY-SA
  */
-
 package fr.cnam.group.exceptions;
 
-public class UserDataInputException extends Exception{
-    public UserDataInputException(String msg){
+public class DataException extends Exception{
+    public DataException(String msg){
         super(msg);
     }
 }

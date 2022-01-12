@@ -1,12 +1,25 @@
+/*
+ * Nom de classe : LoadingDialog
+ *
+ * Description   : boite de dialogue affichée pendant le chargement des données contenues dans les fichiers
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group.gui.dialogs;
 
 import javax.swing.*;
-import java.awt.event.*;
+
 
 public class LoadingDialog extends JDialog {
     private JPanel contentPane;
-    private JLabel chargementDesDonnéesEnLabel;
-    private Timer timer;
+    private JLabel chargementLabel;
     private String text = "Chargement des données en cours";
     private boolean stop;
 
@@ -17,8 +30,6 @@ public class LoadingDialog extends JDialog {
         setUndecorated(true);
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         stop = false;
-
-
         new Thread(()->{
             try {
                 animate(".");
@@ -26,30 +37,30 @@ public class LoadingDialog extends JDialog {
                 e.printStackTrace();
             }
         }).start();
-
-
     }
+
+    // méthode récursive animant le texte lors du chargement
     private void animate(String a) throws InterruptedException {
         Thread.sleep(500);
         if (stop){
             System.out.println("stopping animation");
-            return;
+
         }
         else if (a.length() < 4){
 //            System.out.println("a = "+ a);
             a += ".";
-            chargementDesDonnéesEnLabel.setText(text + a);
+            chargementLabel.setText(text + a);
             animate(a);
         }
         else{
             a = ".";
-            chargementDesDonnéesEnLabel.setText(text + a);
+            chargementLabel.setText(text + a);
             animate(a);
         }
 
 
     }
-    private void stopAnimation(){
+    public void stopAnimation(){
         stop = true;
     }
 

@@ -1,24 +1,36 @@
+/*
+ * Nom de classe : MenuAjouter
+ *
+ * Description   : Pilote le menu permettant d'ajouter des utilisateurs.
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay.
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group.gui.menus;
 
-
-
 import fr.cnam.group.DataHandler;
+import fr.cnam.group.exceptions.DataException;
+import fr.cnam.group.exceptions.UserDataInputException;
 import fr.cnam.group.gui.PlaceHolder;
 import fr.cnam.group.users.Administrateur;
 import fr.cnam.group.users.Particulier;
-
 import javax.swing.*;
 import java.util.Arrays;
 
 public class MenuAjouter implements PlaceHolder {
     private JPanel menuAjouterPanel;
-    private JTextPane menuAjouterTitle;
+    private JLabel menuAjouterTitle;
     private JTextField nomUserField;
     private JButton validerButton;
     private JLabel nomUserLabel;
     private JTextField prenomUserField;
     private JLabel prenomUserLabel;
-
     private JTextField dateNaissanceField;
     private JLabel dateLabel;
     private JComboBox addedTypeBox;
@@ -43,23 +55,29 @@ public class MenuAjouter implements PlaceHolder {
 
 
     public MenuAjouter() {
-
         type = Type.Particulier;
         setPlaceHolders();
-
-
+        /*
+         * listener du choix du type d'utilisateur ajouté
+         */
         addedTypeBox.addActionListener(e -> {
             if (addedTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
                 type = Type.Particulier;
+                menuAjouterTitle.setText("Ajouter un utilisateur");
                 setFieldsForParticulier();
 
             }
             else {
                 type = Type.Administrateur;
+                menuAjouterTitle.setText("Ajouter un administrateur");
                 setFieldsForAdmins();
 
             }
         });
+
+        /*
+         * listener du bouton valider
+         */
         validerButton.addActionListener(e -> {
             try {
                 identifiantField.setText(identifiantField.getText().toLowerCase());
@@ -72,10 +90,8 @@ public class MenuAjouter implements PlaceHolder {
                 String ville = villeField.getText();
                 char[] password = passwordField.getPassword();
                 char[] passwordConfirm = passwordConfirmField.getPassword();
-                if (!Arrays.equals(password, passwordConfirm)) {
-                    JOptionPane.showMessageDialog(menuAjouterPanel,"mot de passe non confirmé","erreur mot de passe",JOptionPane.ERROR_MESSAGE);
-                    System.out.println("mot de passe non confirmé.");
-
+                if (!confirmPassword(password, passwordConfirm)) {
+                    throw new UserDataInputException("mot de passe non confirmé.");
                 }
                 else{
                     if (DataHandler.isIdentifiantavailable(identifiant)) {
@@ -89,7 +105,7 @@ public class MenuAjouter implements PlaceHolder {
                                 clearFields();
                                 JOptionPane.showMessageDialog(menuAjouterPanel, "Administrateur ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                             } else {
-                                throw new Exception("echec lors de l'ajout de l'administrateur");
+                                throw new DataException("echec lors de l'ajout de l'administrateur");
                             }
                         }
                         else{
@@ -97,10 +113,10 @@ public class MenuAjouter implements PlaceHolder {
                             try {
                                 typeParticulier  = Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString());
                             }catch (IllegalArgumentException ex){
-                                throw new Exception("veuillez sélectionner un type de Particulier");
+                                throw new UserDataInputException("veuillez sélectionner un type de Particulier");
                             }
                             if (typeParticulierBox.getSelectedItem().toString().isEmpty()){
-                                throw new Exception("veuillez sélectionner un type de Particulier");
+                                throw new UserDataInputException("veuillez sélectionner un type de Particulier");
                             }
                             else {
                                 Particulier.checkIdentifiantFormat(identifiant);
@@ -112,12 +128,13 @@ public class MenuAjouter implements PlaceHolder {
 
                                 if (new Particulier(nom, prenom, date,Particulier.formatAdresse(rue,postalCode,ville), Particulier.generateDateModification(),typeParticulier, identifiant, password).ajouter()) {
                                     clearFields();
+                                    setPlaceHolders();
                                     JOptionPane.showMessageDialog(menuAjouterPanel, "Particulier ajouté", "succès", JOptionPane.INFORMATION_MESSAGE);
                                 }
                             }
                         }
                     } else {
-                        throw new Exception("identifiant non disponible");
+                        throw new DataException("identifiant non disponible");
                     }
                 }
             } catch (Exception ex) {
@@ -126,8 +143,9 @@ public class MenuAjouter implements PlaceHolder {
         });
     }
 
-
-
+    /*
+     * place des indices dans les zones de saisie
+     */
     public void setPlaceHolders(){
         setPlaceHolder(identifiantField, IDENTIFIANT_PLACEHOLDER);
         setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
@@ -139,13 +157,13 @@ public class MenuAjouter implements PlaceHolder {
         setPlaceHolder(villeField,CITY_PLACEHOLDER);
     }
 
-
+    /*
+     * affiche les éléments graphiques nécéssaires à l'ajout d'un administrateur
+     */
     public void setFieldsForAdmins(){
-
 
         identifiantField.setVisible(true);
         identifiantLabel.setVisible(true);
-
         passwordField.setVisible(true);
         passwordLabel.setVisible(true);
         passwordConfirmField.setVisible(true);
@@ -164,11 +182,11 @@ public class MenuAjouter implements PlaceHolder {
         codePostalLabel.setVisible(false);
         villeField.setVisible(false);
         villeLabel.setVisible(false);
-
-
-
     }
 
+    /*
+     * affiche les éléments graphiques nécéssaires à l'ajout d'un particulier
+     */
     public void setFieldsForParticulier(){
         passwordField.setVisible(true);
         passwordLabel.setVisible(true);
@@ -192,9 +210,9 @@ public class MenuAjouter implements PlaceHolder {
         identifiantLabel.setVisible(true);
     }
 
-
-
-
+    /*
+     * vide les zone de saisie de texte
+     */
     public void clearFields(){
         identifiantField.setText("");
         nomUserField.setText("");
@@ -206,8 +224,20 @@ public class MenuAjouter implements PlaceHolder {
         codePostalField.setText("");
         villeField.setText("");
     }
+    /*
+     * vérifie la confirmation du mot de passe
+     */
+    public boolean confirmPassword(char[] password, char[] passwordConfirm){
 
-
+        if (!Arrays.equals(password, passwordConfirm)) {
+            passwordField.setText("");
+            passwordConfirmField.setText("");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 
     public JTextField getNomUserField() {
         return nomUserField;
@@ -224,7 +254,4 @@ public class MenuAjouter implements PlaceHolder {
     public JPanel getMenuAjouterPanel() {
         return menuAjouterPanel;
     }
-
-
-
 }

@@ -1,9 +1,22 @@
+/*
+ * Nom de classe : MenuBar
+ *
+ * Description   : classe de la barre d'outil
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group.gui;
 
 import javax.swing.*;
 
 public class MenuBar extends JMenuBar {
-
 
         private JMenu rollMenu;
         private JMenuItem returnToMain;
@@ -12,20 +25,12 @@ public class MenuBar extends JMenuBar {
         public MenuBar() {
             super();
             rollMenu = new JMenu("fichier");
-
             returnToMain = new JMenuItem("menu principal");
             quit = new JMenuItem("quitter");
-
             rollMenu.setOpaque(true);
             rollMenu.add(returnToMain);
             rollMenu.add(quit);
-            //rollMenu.setBackground(Color.CYAN);
-
-
-
             this.add(rollMenu);
-
-
         }
 
         public void mainMenu(){
@@ -37,7 +42,6 @@ public class MenuBar extends JMenuBar {
             rollMenu.updateUI();
         }
 
-
     public JMenuItem getQuit() {
         return quit;
     }
@@ -46,14 +50,8 @@ public class MenuBar extends JMenuBar {
             return rollMenu;
         }
 
-        public JMenuItem getReturnToMain() {
+    public JMenuItem getReturnToMain() {
             return returnToMain;
         }
-
-
-
-
-
-
 
 }

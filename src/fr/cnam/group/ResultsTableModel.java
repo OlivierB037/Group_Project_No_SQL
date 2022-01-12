@@ -1,10 +1,23 @@
+/*
+ * Nom de classe : ResultsTableModel
+ *
+ * Description   : contient le modèle à appliquer à la JTable permettant d'afficher les utilisateurs
+ *                 (inspirée du code permettant d'afficher des résultats de requêtes MySQL proposée par Dominique Liard sur koor.fr)
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group;
 
 import fr.cnam.group.users.Administrateur;
 import fr.cnam.group.users.Particulier;
-
 import javax.swing.table.AbstractTableModel;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -36,7 +49,6 @@ public class ResultsTableModel extends AbstractTableModel {
                 columnsTypes.add(String.class.getName());
                 columnsTypes.add(String.class.getName());
 
-                System.out.println("resultTableModel : array type is particulier");
                 Particulier[] partArray = (Particulier[]) Arrays.copyOf(resultArray,resultArray.length);
 
                 for (Particulier p : partArray) {
@@ -55,7 +67,7 @@ public class ResultsTableModel extends AbstractTableModel {
             } else if (resultArray instanceof Administrateur[]){
                 columnsNames.add("Identifiant");
                 columnsTypes.add(String.class.getName());
-                System.out.println("resultTableModel : array type is Administrateur");
+//                System.out.println("resultTableModel : array type is Administrateur");
                 Administrateur[] adminArray = (Administrateur[]) Arrays.copyOf(resultArray,resultArray.length);
                 for (Administrateur p : adminArray) {
                     if (p != null) {
@@ -96,7 +108,5 @@ public class ResultsTableModel extends AbstractTableModel {
     @Override public Object getValueAt( int line, int column ) {
         return values.get( line ).get( column );
     }
-    public String getParticulierIdAt(int line){
-        return values.get(line).get(0);
-    }
+
 }

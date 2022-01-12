@@ -1,3 +1,17 @@
+/*
+ * Nom de classe : SearchDialog
+ *
+ * Description   : boite de dialogue permettant la selection du type de recherche
+ *
+ * Auteurs       : Steven Besnard, Agnes Laurencon, Olivier Baylac, Benjamin Launay
+ *
+ * Version       : 1.0
+ *
+ * Date          : 09/01/2022
+ *
+ * Copyright     : CC-BY-SA
+ */
+
 package fr.cnam.group.gui.dialogs;
 
 import javax.swing.*;
@@ -20,16 +34,7 @@ public class SearchDialog extends JDialog {
     private JButton searchByTypeButton;
     private ActionListener listener;
 
-    //    enum SearchType {
-//        searchByName("Rechercher par nom"),
-//        searchById("Rechercher par identifiant");
-//
-//        public final String label;
-//
-//        private SearchType(String label) {
-//            this.label = label;
-//        }
-//    }
+
     public SearchDialog(ActionListener _listener, Component owner) {
         listener = _listener;
         this.setTitle("type de recherche");
@@ -41,6 +46,9 @@ public class SearchDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
 
+        /*
+        * ces listeners modifient l'affichage des zones de saisies selon le type de recherche
+        */
         searchByNameButton.addActionListener(e -> {
             listener.actionPerformed(new ActionEvent(searchByNameButton, NAME_SEARCH_ID, NAME_SEARCH_COMMAND));
             dispose();
@@ -77,7 +85,7 @@ public class SearchDialog extends JDialog {
 
 
     private void onCancel() {
-        listener.actionPerformed(new ActionEvent(searchByNameButton, NAME_SEARCH_ID, NAME_SEARCH_COMMAND));
+        listener.actionPerformed(new ActionEvent(searchByNameButton, NAME_SEARCH_ID, NAME_SEARCH_COMMAND)); //en l'absence de choix, la recherche par nom est définie par défaut
         dispose();
     }
 
@@ -94,5 +102,13 @@ public class SearchDialog extends JDialog {
 
     public JButton getSearchByIdButton() {
         return searchByIdButton;
+    }
+
+    public JButton getSearchByBirthDateButton() {
+        return searchByBirthDateButton;
+    }
+
+    public JButton getSearchByTypeButton() {
+        return searchByTypeButton;
     }
 }
