@@ -284,7 +284,6 @@ public class MenuModifier implements PlaceHolder {
 //                                        System.out.println("mouse clicked on result");
                                         try {
                                             if (resultsTable.getSelectedRow() != -1) {
-//                                                System.out.println("clicking valider");
                                                 actionPerformed(new ActionEvent(resultsTable,RESULT_TABLE_EVENT_ID,"validateSelect"));
                                             }
                                         } catch (Exception ex) {
@@ -757,16 +756,6 @@ public class MenuModifier implements PlaceHolder {
         }
     }
 
-    /*
-     * selectionne un utilisateur
-     */
-//    public int selectResult(){
-//
-//        int selectedRow = resultsTable.getSelectedRow();
-//
-//        return selectedRow;
-//
-//    }
 
     /*
      * vide les zone de saisie de texte
@@ -785,14 +774,7 @@ public class MenuModifier implements PlaceHolder {
         villeField.setText("");
     }
 
-    /*
-     * place des indices dans les zones de saisie
-     */
-    public void setPlaceHolders(){
 
-        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
-
-    }
 
     public JPanel getModifierPane() {
         return modifierPane;

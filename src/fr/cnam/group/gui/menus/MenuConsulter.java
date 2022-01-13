@@ -63,13 +63,10 @@ public class MenuConsulter implements PlaceHolder {
         setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
         if (DataHandler.currentUser instanceof Administrateur) {
             searchedUserTypeBox.setVisible(true);
-
-
         }
         else{
             searchedUserTypeBox.setSelectedItem("Particulier");
             searchedUserTypeBox.setVisible(false);
-
         }
 
         type = Type.Particulier; // par défaut, le type d'utilisateur recherché est particulier
@@ -101,10 +98,6 @@ public class MenuConsulter implements PlaceHolder {
                 searchTypeButton.setVisible(true);
                 validerButton.setVisible(true);
                 userSearchPanel.setVisible(true);
-//                typeParticulierLabel.setVisible(true);
-//                typeParticulierBox.setVisible(true);
-//
-//                searchType = SearchType.Name;
 
                 try {
                     resultsTable.setModel(new ResultsTableModel(null));
@@ -133,13 +126,7 @@ public class MenuConsulter implements PlaceHolder {
                 searchTypeButton.setEnabled(true);
                 searchTypeButton.setVisible(true);
                 manageSearchPanel();
-//                userSearchPanel.setVisible(true);
-//                nomUserField.setVisible(true);
-//                nomUserLabel.setVisible(true);
-//                prenomUserField.setVisible(true);
-//                prenomUserLabel.setVisible(true);
-//                typeParticulierBox.setVisible(false);
-//                typeParticulierLabel.setVisible(false);
+
             }
             else {
                 type = Type.Administrateur;
@@ -188,12 +175,7 @@ public class MenuConsulter implements PlaceHolder {
                         } catch (NullPointerException ex) {
                             throw new UserDataInputException("veuillez remplir un des formulaires ou cliquer sur \"tout consulter\".");
                         }
-//                        if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
-//                            particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(),identifiantField.getText(), false);
-//                        }
-//                        else {
-//                            particulierSearchResult = Particulier.trouverParticulier(Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()));
-//                        }
+
                         if (particulierSearchResult != null) {
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
@@ -211,6 +193,7 @@ public class MenuConsulter implements PlaceHolder {
             }
         });
     }
+
     /*
      * place des indices dans les zones de saisie
      */
@@ -295,6 +278,7 @@ public class MenuConsulter implements PlaceHolder {
         dialog.pack();
         dialog.setVisible(true);
     }
+
     /*
      * cache les JTextfield et leur JLabel concernant les particulier
      */
@@ -309,9 +293,8 @@ public class MenuConsulter implements PlaceHolder {
         identifiantLabel.setVisible(false);
         typeParticulierBox.setVisible(false);
         typeParticulierLabel.setVisible(false);
-
-
     }
+
     /*
      * affiche uniquement les zones de saisies concernant la recherche par nom
      */
