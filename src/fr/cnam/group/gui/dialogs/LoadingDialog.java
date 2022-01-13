@@ -43,7 +43,7 @@ public class LoadingDialog extends JDialog {
     private void animate(String a) throws InterruptedException {
         Thread.sleep(500);
         if (stop){
-            System.out.println("stopping animation");
+//            System.out.println("stopping animation");
 
         }
         else if (a.length() < 4){

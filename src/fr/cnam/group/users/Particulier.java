@@ -222,7 +222,7 @@ public class Particulier extends Account {
 //            System.out.println("reading from extracted data : " + p.getIdentifiant());
             if (p != null)
             {
-                System.out.println("modifying" + p.getIdentifiant() + " to : " + newAccount.getIdentifiant());
+
                 FilesHandler.addToFile(p);
             }
             else

@@ -44,15 +44,16 @@ public abstract class Account {
 
 
     public static void checkPasswordFormat(char[] password) throws UserDataInputException {
-        if (password.length < 6 || password.length > 20)
+        if (password.length >= 6 && password.length <= 20)
         {
             for (char c : password) {
                 if (!(Character.toString(c).matches("[0-9a-zA-Z]"))) {
                     System.out.println("format incorrect");
-                    throw new UserDataInputException("format du mot de passe incorrect\nformat requis : chiffres et lettres, 6 à 20 caractères");
+                    throw new UserDataInputException("format du mot de passe incorrect\ncaractères acceptés : chiffres et lettres Majuscules ou minuscules");
                 }
             }
         }
+        else throw new UserDataInputException("le mot de passe doit faire entre 6 et 20 caractères");
 //        System.out.println("format du mot de passe valide");
     }
 

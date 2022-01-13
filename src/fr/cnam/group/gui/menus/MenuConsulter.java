@@ -16,6 +16,7 @@ package fr.cnam.group.gui.menus;
 
 import fr.cnam.group.*;
 import fr.cnam.group.exceptions.DataException;
+import fr.cnam.group.exceptions.UserDataInputException;
 import fr.cnam.group.gui.PlaceHolder;
 import fr.cnam.group.gui.dialogs.SearchDialog;
 import fr.cnam.group.users.Administrateur;
@@ -48,6 +49,8 @@ public class MenuConsulter implements PlaceHolder {
     private Administrateur[] adminSearchResult;
     private enum Type {Particulier, Administrateur}
     private Type type;
+    private enum SearchType{Id,Name, Date, Statut, noSearch}
+    private SearchType searchType;
     private MenuPrincipal menuPrincipal;
 
     public MenuConsulter() {
@@ -60,6 +63,7 @@ public class MenuConsulter implements PlaceHolder {
         setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
         if (DataHandler.currentUser instanceof Administrateur) {
             searchedUserTypeBox.setVisible(true);
+
 
         }
         else{
@@ -77,7 +81,7 @@ public class MenuConsulter implements PlaceHolder {
         searchTypeButton.addActionListener(e -> {
             hideAllFields();
 //            setPlaceHolders();
-            manageSearchPanel();
+            modifySearchType();
         });
 
         /*
@@ -85,25 +89,29 @@ public class MenuConsulter implements PlaceHolder {
          */
         selectAllBox.addActionListener((listener) ->{
             if (selectAllBox.isSelected()){
+                searchType = SearchType.noSearch;
                 dropPlaceHolder(dateNaissanceField);
                 searchTypeButton.setVisible(false);
-                userSearchPanel.setVisible(false);
-                typeParticulierLabel.setVisible(false);
-                typeParticulierBox.setVisible(false);
+                manageSearchPanel();
                 validerButton.setVisible(false);
                 validerButton.doClick();
             }
             else{
-                typeParticulierLabel.setVisible(true);
-                typeParticulierBox.setVisible(true);
+                searchType = SearchType.Name;
                 searchTypeButton.setVisible(true);
                 validerButton.setVisible(true);
                 userSearchPanel.setVisible(true);
+//                typeParticulierLabel.setVisible(true);
+//                typeParticulierBox.setVisible(true);
+//
+//                searchType = SearchType.Name;
+
                 try {
                     resultsTable.setModel(new ResultsTableModel(null));
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
+                manageSearchPanel();
             }
         });
 
@@ -111,26 +119,37 @@ public class MenuConsulter implements PlaceHolder {
          * listener sur le type d'utilisateur recherché
          */
         searchedUserTypeBox.addActionListener((e) -> {
+
+            if (selectAllBox.isSelected()){
+                selectAllBox.setSelected(false);
+                resultsTable.setModel(new ResultsTableModel(null));
+            }
+
             if (searchedUserTypeBox.getSelectedItem().toString().equals(Type.Particulier.toString())){
                 type = Type.Particulier;
+                searchType = SearchType.Name;
                 selectAllBox.setVisible(true);
-                validerButton.setVisible(false);
-                searchTypeButton.setEnabled(false);
-                userSearchPanel.setVisible(true);
-                nomUserField.setVisible(true);
-                nomUserLabel.setVisible(true);
-                prenomUserField.setVisible(true);
-                prenomUserLabel.setVisible(true);
-                typeParticulierBox.setVisible(false);
-                typeParticulierLabel.setVisible(false);
+                validerButton.setVisible(true);
+                searchTypeButton.setEnabled(true);
+                searchTypeButton.setVisible(true);
+                manageSearchPanel();
+//                userSearchPanel.setVisible(true);
+//                nomUserField.setVisible(true);
+//                nomUserLabel.setVisible(true);
+//                prenomUserField.setVisible(true);
+//                prenomUserLabel.setVisible(true);
+//                typeParticulierBox.setVisible(false);
+//                typeParticulierLabel.setVisible(false);
             }
             else {
                 type = Type.Administrateur;
                 selectAllBox.setSelected(true);
                 selectAllBox.setVisible(false);
-                userSearchPanel.setVisible(false);
+                typeParticulierBox.setVisible(false);
                 searchTypeButton.setEnabled(false);
                 validerButton.setVisible(false);
+                searchType = SearchType.noSearch;
+                manageSearchPanel();
                 validerButton.doClick();
             }
         });
@@ -159,16 +178,26 @@ public class MenuConsulter implements PlaceHolder {
                         if (!(dateNaissanceField.getText().isEmpty())) {
                             Particulier.checkDateFormat(dateNaissanceField.getText());
                         }
-
-                        if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
-                            particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(),identifiantField.getText(), false);
+                        try {
+                            switch (searchType){
+                                case Id ->  particulierSearchResult = Particulier.trouverParticulier(null, null, null,identifiantField.getText(), false);
+                                case Name -> particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(),null, false);
+                                case Date -> particulierSearchResult = Particulier.trouverParticulier(null, null, dateNaissanceField.getText(), null, false);
+                                case Statut -> particulierSearchResult = Particulier.trouverParticulier(Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()));
+                            }
+                        } catch (NullPointerException ex) {
+                            throw new UserDataInputException("veuillez remplir un des formulaires ou cliquer sur \"tout consulter\".");
                         }
-                        else {
-                            particulierSearchResult = Particulier.trouverParticulier(Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()));
-                        }
+//                        if (typeParticulierBox.getSelectedItem().toString().isEmpty()) {
+//                            particulierSearchResult = Particulier.trouverParticulier(nomUserField.getText(), prenomUserField.getText(), dateNaissanceField.getText(),identifiantField.getText(), false);
+//                        }
+//                        else {
+//                            particulierSearchResult = Particulier.trouverParticulier(Particulier.TypeParticulier.valueOf(typeParticulierBox.getSelectedItem().toString()));
+//                        }
                         if (particulierSearchResult != null) {
                             ResultsTableModel resultsTableModel = new ResultsTableModel(particulierSearchResult);
                             resultsTable.setModel(resultsTableModel);
+
                             resultsTable.setVisible(true);
                             consultPane.updateUI();
                         } else {
@@ -176,6 +205,7 @@ public class MenuConsulter implements PlaceHolder {
                         }
                     }
                 } catch (Exception ex) {
+
                     JOptionPane.showMessageDialog(consultPane, ex.getMessage(), "erreur", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -190,11 +220,53 @@ public class MenuConsulter implements PlaceHolder {
         setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
         setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
     }
+    public void dropPlaceHolders(){
+        dropPlaceHolder(identifiantField);
+        dropPlaceHolder(nomUserField);
+        dropPlaceHolder(prenomUserField);
+        dropPlaceHolder(dateNaissanceField);
+
+    }
+
+    public void manageSearchPanel(){
+        switch (searchType){
+            case Id -> {
+                hideAllFields();
+                setPlaceHolder(identifiantField,IDENTIFIANT_PLACEHOLDER);
+                identifiantField.setVisible(true);
+                identifiantLabel.setVisible(true);
+                userSearchPanel.setVisible(true);
+            }
+            case Name -> {
+                showNameFields();
+                setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
+                setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+                userSearchPanel.setVisible(true);
+            }
+            case Date -> {
+                hideAllFields();
+                setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
+                dateLabel.setVisible(true);
+                dateNaissanceField.setVisible(true);
+                userSearchPanel.setVisible(true);
+            }
+            case Statut -> {
+                hideAllFields();
+                typeParticulierBox.setVisible(true);
+                typeParticulierLabel.setVisible(true);
+                userSearchPanel.setVisible(true);
+            }
+            case noSearch -> {
+                userSearchPanel.setVisible(false);
+            }
+        }
+    }
+
 
     /*
      * affiche la boite de dialogue de choix du type de recherche et gère le choix de l'utilisateur
      */
-    public void manageSearchPanel(){
+    public void modifySearchType(){
         hideAllFields();
         resultsTable.setModel(new ResultsTableModel(null));
         SearchDialog dialog = new SearchDialog(new ActionListener() {
@@ -204,29 +276,19 @@ public class MenuConsulter implements PlaceHolder {
 
                 switch (e.getID()){
                     case SearchDialog.NAME_SEARCH_ID -> {
-                        showNameFields();
-                        setPlaceHolder(nomUserField,NOM_PLACEHOLDER);
-                        setPlaceHolder(prenomUserField,PRENOM_PLACEHOLDER);
+                        searchType = SearchType.Name;
                     }
                     case SearchDialog.ID_SEARCH_ID -> {
-                        hideAllFields();
-                        setPlaceHolder(identifiantField,IDENTIFIANT_PLACEHOLDER);
-                        identifiantField.setVisible(true);
-                        identifiantLabel.setVisible(true);
+                       searchType = SearchType.Id;
                     }
                     case SearchDialog.DATE_SEARCH_ID -> {
-                        hideAllFields();
-                        setPlaceHolder(dateNaissanceField,DATE_PLACEHOLDER);
-                        dateLabel.setVisible(true);
-                        dateNaissanceField.setVisible(true);
+                        searchType = SearchType.Date;
                     }
                     case SearchDialog.TYPE_SEARCH_ID -> {
-                        hideAllFields();
-                        typeParticulierBox.setVisible(true);
-                        typeParticulierLabel.setVisible(true);
+                        searchType = SearchType.Statut;
                     }
-
                 }
+                manageSearchPanel();
             }
         },consultPane);
         dialog.setLocationRelativeTo(consultPane);
@@ -245,6 +307,9 @@ public class MenuConsulter implements PlaceHolder {
         dateLabel.setVisible(false);
         identifiantField.setVisible(false);
         identifiantLabel.setVisible(false);
+        typeParticulierBox.setVisible(false);
+        typeParticulierLabel.setVisible(false);
+
 
     }
     /*

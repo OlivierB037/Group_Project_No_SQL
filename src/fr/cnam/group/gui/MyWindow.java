@@ -23,7 +23,7 @@ public class MyWindow extends JFrame {
         super("Annuaire");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setMinimumSize(new Dimension(500,500));
-        this.setPreferredSize(new Dimension(700,500));
+        this.setPreferredSize(new Dimension(800,500));
         this.setLocationRelativeTo(null);
     }
 }

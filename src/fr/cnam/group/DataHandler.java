@@ -214,7 +214,7 @@ public class DataHandler {
         dataHandler.loadData(new Annuaire(), Particulier.class);
 
         try {
-            Thread.sleep(5000); // simule un  délai de démarrage car le fichier de l'annuaire trop petit pour avoir un réel temps de chargement
+            Thread.sleep(1000); // simule un  délai de démarrage car le fichier de l'annuaire trop petit pour avoir un réel temps de chargement
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

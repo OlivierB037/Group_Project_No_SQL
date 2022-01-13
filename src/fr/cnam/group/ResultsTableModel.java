@@ -93,6 +93,7 @@ public class ResultsTableModel extends AbstractTableModel {
         }
     }
 
+
     @Override public String getColumnName(int i) {
         return columnsNames.get( i );
     }
