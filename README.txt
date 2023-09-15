@@ -1,24 +1,10 @@
 --------------------------------Projet Annuaire NFA 032---------------------------------
---- Auteurs: ------------------------------------
-------- Steven Besnard, ------------------------- 
-------- Agnes Laurencon, ------------------------
+--- Auteur: ------------------------------------
 ------- Olivier Baylac, -------------------------
-------- Benjamin Launay -------------------------
 -------------------------------------------------
 
-notes sur la réalisation du projet : 
+IMPORTANT: I modified the original readme file I uploaded to be graded (It was a group project), but now that it's done I can say that I actually did it all by Myself because the other members of the group were way too busy (doing a project at four persons takes a lot of time (way more than we had available) to synchronize and distribute the work) 
 
-* Nous avons essayé, malgré le peu de temps libre dont chacun de nous disposait 
-  et l'absence totale de créneaux temporels durant lequel nous etions tous disponible, 
-  de suivre le cahier des charges au plus près tout en nous efforçant de couvrir la
-  totalité du programme.
-
-* Les suppléments (interface graphique swing, cryptage des mots de passe, utilisation de AbstractTableModel)
-bien que non demandés nous ont permis d'apprendre énormément, n'est-ce pas la le plus important ? 
-
-* Nous avons également essayé de nous répartir le travail le plus équitablement possible
-  cependant lors du partage des taches nous avons du prendre en compte nos situations
-  familiales, professionnelles et la disparité dans le nombre d'UE que chacun de nous suit.
 
 notes sur le projet:
 
